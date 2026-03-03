@@ -1,0 +1,22 @@
+<section class="page-header">
+    <div class="container">
+        <h1>Error</h1>
+        <p>Se ha producido un error inesperado.</p>
+        <div style="margin-top: 24px;">
+            <a href="<?= $this->url('home') ?>" class="btn btn-primary">Volver al Inicio</a>
+        </div>
+    </div>
+</section>
+
+<?php if (isset($this->display_exceptions) && $this->display_exceptions && isset($this->exception)): ?>
+    <section class="page-content">
+        <div class="container">
+            <div class="content-card">
+                <h2>Detalles del error</h2>
+                <p><strong><?= get_class($this->exception) ?></strong></p>
+                <p><?= $this->exception->getMessage() ?></p>
+                <pre style="background: var(--bg-alt); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; margin-top: 16px;"><?= $this->exception->getTraceAsString() ?></pre>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>

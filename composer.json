@@ -1,0 +1,28 @@
+{
+    "name": "proyecto-base/laminas-skeleton",
+    "description": "Laminas Project Skeleton",
+    "type": "project",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "laminas",
+        "skeleton",
+        "mvc"
+    ],
+    "require": {
+        "php": "^8.0 || ~8.1 || ~8.2",
+        "laminas/laminas-db": "^2.20",
+        "laminas/laminas-mvc": "^3.1.1",
+        "laminas/laminas-router": "^3.16",
+        "laminas/laminas-session": "^2.25",
+        "laminas/laminas-validator": "^2.65"
+    },
+    "autoload": {
+        "psr-4": {
+            "Application\\": "module/Application/src/",
+            "Web\\": "module/Web/src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

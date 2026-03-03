@@ -1,0 +1,32 @@
+# Dependencias
+/vendor/
+/node_modules/
+
+# Archivos de configuración local
+/config/autoload/local.php
+/config/autoload/phinx.local.php
+/config/autoload/doctrine.local.php
+
+# Cache y logs
+/data/cache/
+/data/log/
+/data/sessions/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.log
+
+# Composer
+/composer.phar
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

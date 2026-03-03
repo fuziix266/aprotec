@@ -1,0 +1,302 @@
+<?php
+// Fotos reales del evento navideño
+$santaBase = $this->basePath('/img/navidad/santa/');
+$santaCount = 6;
+?>
+<div class="page-header-civic navidad-header-civic">
+    <div class="container">
+        <div class="section-label reveal">
+            <span class="section-label-line" style="background:#FFD700;"></span>
+            <span style="color:rgba(255,255,255,0.85);">Actividad Navideña 2025</span>
+        </div>
+        <h1 class="reveal">🎄 Navidad APROTEC 2025</h1>
+        <p class="reveal">¡Únete a nosotros para llevar alegría y regalos a nuestra comunidad esta Navidad!</p>
+        <div style="margin-top:24px;" class="reveal">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScYtgeq2mwAGx_IUR5hNJ86xSDx_Ffika0EKBzdjHh4nvItIw/viewform?usp=header"
+                target="_blank" rel="noopener"
+                class="doc-btn-civic" style="background:#FFD700; color:#0B3D2C; font-size:1rem; padding:16px 32px;">
+                🎁 Inscribe a tus niños aquí
+            </a>
+        </div>
+        <div class="breadcrumb-civic reveal" style="margin-top:20px;">
+            <a href="<?= $this->url('home') ?>">Inicio</a>
+            <span>›</span><span class="current">Navidad</span>
+        </div>
+    </div>
+</div>
+
+<section class="page-content-civic">
+    <div class="container">
+
+        <!-- Descripción -->
+        <div class="civic-card reveal">
+            <h2>🎁 Descripción de la Actividad</h2>
+            <p>Este año queremos revivir la magia de la Navidad con una actividad especial pensada para los hijos, sobrinos y nietos de quienes deseen participar. A través de un recorrido navideño con Santa y su trineo, iremos entregando regalos y compartiendo un momento lleno de sonrisas, fotos y recuerdos que quedarán para siempre en la memoria de los más pequeños.</p>
+            <p>La idea es generar ese momento único que todos recordamos de nuestra infancia: ver llegar la Navidad, sentir la emoción del regalo y vivir la ilusión de encontrarse con el mismísimo Santa Claus.</p>
+            <p>Para participar, cada funcionario que se sume aceptará que se le descuenten <strong>$10.000</strong> desde los <strong>$20.000</strong> que entrega APROTEC como bono navideño.</p>
+        </div>
+
+        <!-- Caravana -->
+        <div class="civic-card reveal">
+            <h2>🚗 La Caravana Navideña</h2>
+            <p>No es obligatorio adornar el auto ni llevar disfraz, y tampoco es obligatorio ir en la caravana. Quienes tengan vehículo y quieran sumarse serán muy bienvenidos, y algunos socios donarán globos para darle un toque más festivo al recorrido.</p>
+            <p>Lo importante es que puedan llegar, disfrutar, compartir y alegrar a los niños en esta Navidad. ¡La idea es pasarlo bien y vivir un momento bonito en familia! 🎄✨</p>
+            <ul>
+                <li>Límite de edad: 12 años para los niños</li>
+                <li>Fotos con Santa permitidas y bienvenidas</li>
+                <li>No hay límite de niños por funcionario</li>
+                <li>Pueden llevar regalos adicionales para entregar junto a Santa</li>
+                <li>Es completamente opcional disfrazarse o adornar el vehículo</li>
+            </ul>
+        </div>
+
+        <!-- Galería -->
+        <div class="civic-card reveal">
+            <h2>📸 Fotos del Evento Navideño</h2>
+            <p style="margin-bottom:24px;">Momentos especiales de nuestra actividad con Santa. Haz clic en una foto para ampliarla.</p>
+            <div class="santa-gallery-civic">
+                <?php for ($i = 1; $i <= $santaCount; $i++): ?>
+                    <div class="santa-thumb" onclick="openNavLightbox(<?= $i - 1 ?>)">
+                        <img src="<?= $santaBase ?><?= $i ?>.jpg"
+                            alt="Navidad APROTEC — Foto <?= $i ?>"
+                            loading="lazy"
+                            onerror="this.parentElement.style.display='none'">
+                        <div class="navidad-thumb-overlay">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="white">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                            </svg>
+                        </div>
+                    </div>
+                <?php endfor; ?>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="civic-card reveal">
+            <h2>❓ Preguntas Frecuentes</h2>
+            <details class="faq-civic">
+                <summary>¿Cuántos niños puedo llevar?</summary>
+                <p>No existe un límite. Solo pedimos que estén todos juntos en el mismo punto del recorrido para que Santa pueda entregar los regalos sin demoras.</p>
+            </details>
+            <details class="faq-civic">
+                <summary>¿Puedo entregar los regalos de mi familia en ese mismo momento?</summary>
+                <p>Sí, no hay ninguna restricción. Puedes llevar los regalos que desees para entregarlos junto a Santa.</p>
+            </details>
+            <details class="faq-civic">
+                <summary>¿Habrá fotos con Santa?</summary>
+                <p>¡Por supuesto! Podrán tomarse todas las fotos que quieran con Santa y su trineo.</p>
+            </details>
+            <details class="faq-civic">
+                <summary>¿Debemos sumarnos a la caravana?</summary>
+                <p>Idealmente sí, para mantener el espíritu navideño y que todos vivan el recorrido juntos.</p>
+            </details>
+            <details class="faq-civic">
+                <summary>¿Es obligatorio disfrazarse o adornar el vehículo?</summary>
+                <p>No. Es completamente opcional para quien quiera darle un toque especial al recorrido.</p>
+            </details>
+            <details class="faq-civic">
+                <summary>¿Cuál es el límite de edad?</summary>
+                <p>El límite de edad son 12 años.</p>
+            </details>
+        </div>
+
+        <!-- Contacto -->
+        <div class="civic-card reveal" style="text-align: center;">
+            <h2>📧 Contacto del Evento</h2>
+            <p><strong>Daniela Ramos</strong> — Coordinadora del Evento</p>
+            <a href="mailto:daniela.ramos@municipalidadarica.cl" class="doc-btn-civic" style="margin-top:16px; display:inline-flex;">
+                ✉️ daniela.ramos@municipalidadarica.cl
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div class="nav-lightbox" id="navLightbox" role="dialog" aria-modal="true">
+    <button class="nav-lightbox-close" onclick="closeNavLightbox()" aria-label="Cerrar">×</button>
+    <button class="nav-lightbox-btn nav-lightbox-prev" onclick="navLightboxChange(-1)" aria-label="Anterior">‹</button>
+    <div class="nav-lightbox-content">
+        <img src="" alt="Foto Navidad APROTEC" class="nav-lightbox-img" id="navLightboxImg">
+        <div class="nav-lightbox-counter" id="navLightboxCounter"></div>
+    </div>
+    <button class="nav-lightbox-btn nav-lightbox-next" onclick="navLightboxChange(1)" aria-label="Siguiente">›</button>
+</div>
+
+<style>
+    /* Snowflakes – inline para que no dependan de caché del CSS externo */
+    @keyframes navSnow {
+        0% {
+            transform: translateY(-60px) rotate(0deg);
+            opacity: 0;
+        }
+
+        5% {
+            opacity: 1;
+        }
+
+        95% {
+            opacity: 0.6;
+        }
+
+        100% {
+            transform: translateY(110vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+
+    .snow-particle {
+        position: fixed;
+        top: -40px;
+        color: rgba(255, 255, 255, 0.85);
+        pointer-events: none;
+        z-index: 9998;
+        animation: navSnow linear infinite;
+        text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+        user-select: none;
+    }
+</style>
+
+<script>
+    (function() {
+        /* ---- Snowflakes JS ---- */
+        var snowData = [{
+                l: '2%',
+                d: 13,
+                dl: 0,
+                fs: '0.9em'
+            },
+            {
+                l: '9%',
+                d: 18,
+                dl: 2,
+                fs: '1.4em'
+            },
+            {
+                l: '16%',
+                d: 15,
+                dl: 4,
+                fs: '0.75em'
+            },
+            {
+                l: '23%',
+                d: 21,
+                dl: 1,
+                fs: '1em'
+            },
+            {
+                l: '31%',
+                d: 17,
+                dl: 3,
+                fs: '1.2em'
+            },
+            {
+                l: '38%',
+                d: 19,
+                dl: 5,
+                fs: '0.8em'
+            },
+            {
+                l: '46%',
+                d: 14,
+                dl: 0.5,
+                fs: '1.3em'
+            },
+            {
+                l: '53%',
+                d: 22,
+                dl: 2.5,
+                fs: '0.9em'
+            },
+            {
+                l: '60%',
+                d: 16,
+                dl: 1.5,
+                fs: '1.1em'
+            },
+            {
+                l: '67%',
+                d: 20,
+                dl: 3.5,
+                fs: '0.7em'
+            },
+            {
+                l: '74%',
+                d: 18,
+                dl: 0.8,
+                fs: '1.25em'
+            },
+            {
+                l: '81%',
+                d: 15,
+                dl: 4.5,
+                fs: '0.85em'
+            },
+            {
+                l: '88%',
+                d: 23,
+                dl: 2.2,
+                fs: '1.0em'
+            },
+            {
+                l: '93%',
+                d: 17,
+                dl: 1.8,
+                fs: '1.15em'
+            },
+            {
+                l: '97%',
+                d: 19,
+                dl: 3.2,
+                fs: '0.8em'
+            }
+        ];
+        var symbols = ['❄', '❅', '❆', '*', '✦'];
+        snowData.forEach(function(s) {
+            var el = document.createElement('span');
+            el.className = 'snow-particle';
+            el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            el.style.left = s.l;
+            el.style.fontSize = s.fs;
+            el.style.animationDuration = s.d + 's';
+            el.style.animationDelay = s.dl + 's';
+            document.body.appendChild(el);
+        });
+
+        /* ---- Lightbox ---- */
+        var total = <?= $santaCount ?>;
+        var current = 0;
+        var base = '<?= str_replace("'", "\\'", $santaBase) ?>';
+
+        window.openNavLightbox = function(idx) {
+            current = idx;
+            updateLB();
+            document.getElementById('navLightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+        window.closeNavLightbox = function() {
+            document.getElementById('navLightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        };
+        window.navLightboxChange = function(dir) {
+            current = (current + dir + total) % total;
+            updateLB();
+        };
+
+        function updateLB() {
+            document.getElementById('navLightboxImg').src = base + (current + 1) + '.jpg';
+            document.getElementById('navLightboxCounter').textContent = (current + 1) + ' / ' + total;
+        }
+
+        document.getElementById('navLightbox').addEventListener('click', function(e) {
+            if (e.target === this) closeNavLightbox();
+        });
+        document.addEventListener('keydown', function(e) {
+            var lb = document.getElementById('navLightbox');
+            if (!lb.classList.contains('active')) return;
+            if (e.key === 'Escape') closeNavLightbox();
+            if (e.key === 'ArrowLeft') navLightboxChange(-1);
+            if (e.key === 'ArrowRight') navLightboxChange(1);
+        });
+    })();
+</script>
