@@ -179,7 +179,7 @@ h1, h2, h3, h4, h5 {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
     align-items: stretch;
-    padding-top: 97px; /* announcement + navbar */
+    padding-top: 1rem; /* announcement + navbar */
     position: relative;
     overflow: hidden;
 }
@@ -919,6 +919,56 @@ h1, h2, h3, h4, h5 {
     background: linear-gradient(135deg, #165B33 0%, #0B3D2C 60%, #003370 100%) !important;
 }
 .navidad-header-civic::after { background: #FFD700 !important; }
+
+/* Fondo navideño para la sección de contenido */
+.navidad-header-civic + .page-content-civic {
+    background: linear-gradient(180deg,
+        #1a6b3c 0%,       /* verde navideño claro arriba */
+        #1f7a45 15%,
+        #237d48 35%,
+        #1a6b3c 55%,
+        #165B33 75%,
+        #0f4a2a 100%      /* verde más oscuro abajo */
+    );
+    position: relative;
+}
+
+/* Patrón decorativo sutil sobre el fondo */
+.navidad-header-civic + .page-content-civic::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 30px,
+        rgba(255,255,255,0.02) 30px,
+        rgba(255,255,255,0.02) 60px
+    );
+    pointer-events: none;
+}
+
+/* Cards con fondo semi-transparente para legibilidad sobre verde */
+.navidad-header-civic + .page-content-civic .civic-card {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Textos y detalles dentro de la sección navideña */
+.navidad-header-civic + .page-content-civic .civic-card h2 {
+    color: #0B3D2C;
+    border-bottom-color: #FFD700;
+}
+
+.navidad-header-civic + .page-content-civic .faq-civic summary {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.navidad-header-civic + .page-content-civic .faq-civic summary:hover,
+.navidad-header-civic + .page-content-civic .faq-civic[open] summary {
+    background: rgba(255, 215, 0, 0.15);
+}
 
 /* === Navidad: Thumb overlay === */
 .navidad-thumb-overlay {
