@@ -7,8 +7,13 @@ FROM php:8.2-apache
 # Habilitar mod_rewrite para las rutas de Laminas
 RUN a2enmod rewrite
 
-# Instalar extensiones PHP requeridas por Laminas
-RUN docker-php-ext-install pdo pdo_mysql
+# Instalar utilidades y extensiones PHP requeridas por Laminas y Composer
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libzip-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo pdo_mysql zip
 
 # Copiar configuración de Apache para el virtual host
 COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
