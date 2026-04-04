@@ -1,0 +1,268 @@
+<?php
+/**
+ * Vista: Formulario de registro de datos
+ * Ruta: /qr/:uuid/formulario
+ * Formulario completo con todos los campos requeridos
+ */
+$uuid = $this->uuid ?? '';
+$registro = $this->registro ?? null;
+$error = $this->error ?? '';
+$baseUrl = $this->url('home') . 'vehiculos';
+
+// Valores del registro si existe
+$nombres = $registro['nombres'] ?? '';
+$apellidos = $registro['apellidos'] ?? '';
+$rut = $registro['rut'] ?? '';
+$celular = $registro['celular'] ?? '';
+$patente = $registro['patente'] ?? '';
+$unidad = $registro['unidad'] ?? '';
+$cargo = $registro['cargo'] ?? '';
+$anexo = $registro['anexo'] ?? '';
+$observaciones = $registro['observaciones'] ?? '';
+?>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-person-badge me-2"></i>
+                        Registro de Funcionario y Vehículo
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <?= $this->escapeHtml($error) ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="alert alert-info mb-4" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Completa todos los campos marcados con <span class="text-danger">*</span>
+                    </div>
+                    
+                    <form id="formRegistro" method="post" class="needs-validation" novalidate>
+                        <!-- DATOS PERSONALES -->
+                        <h5 class="border-bottom pb-2 mb-3">
+                            <i class="bi bi-person me-2"></i>
+                            Datos Personales
+                        </h5>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="nombres" class="form-label fw-bold">
+                                    Nombres <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="nombres" 
+                                       name="nombres" 
+                                       value="<?= $this->escapeHtmlAttr($nombres) ?>"
+                                       maxlength="150"
+                                       required>
+                                <div class="invalid-feedback">Este campo es obligatorio</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="apellidos" class="form-label fw-bold">
+                                    Apellidos <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="apellidos" 
+                                       name="apellidos" 
+                                       value="<?= $this->escapeHtmlAttr($apellidos) ?>"
+                                       maxlength="150"
+                                       required>
+                                <div class="invalid-feedback">Este campo es obligatorio</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="rut" class="form-label fw-bold">
+                                    RUT
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="rut" 
+                                       name="rut" 
+                                       value="<?= $this->escapeHtmlAttr($rut) ?>"
+                                       placeholder="12.345.678-9"
+                                       maxlength="12">
+                                <div class="invalid-feedback">Ingrese un RUT válido</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="celular" class="form-label fw-bold">
+                                    Celular <span class="text-danger">*</span>
+                                </label>
+                                <input type="tel" 
+                                       class="form-control" 
+                                       id="celular" 
+                                       name="celular" 
+                                       value="<?= $this->escapeHtmlAttr($celular) ?>"
+                                       placeholder="987654321"
+                                       maxlength="12"
+                                       required>
+                                <div class="invalid-feedback">Este campo es obligatorio</div>
+                            </div>
+                        </div>
+                        
+                        <!-- DATOS LABORALES -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">
+                            <i class="bi bi-building me-2"></i>
+                            Datos Laborales
+                        </h5>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="unidad" class="form-label fw-bold">
+                                    Unidad/Departamento
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="unidad" 
+                                       name="unidad" 
+                                       value="<?= $this->escapeHtmlAttr($unidad) ?>"
+                                       placeholder="Ej: DIDECO, Obras, Tránsito"
+                                       maxlength="200">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="cargo" class="form-label fw-bold">
+                                    Cargo
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="cargo" 
+                                       name="cargo" 
+                                       value="<?= $this->escapeHtmlAttr($cargo) ?>"
+                                       placeholder="Ej: Director, Encargado"
+                                       maxlength="200">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="anexo" class="form-label fw-bold">
+                                    Anexo Telefónico
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="anexo" 
+                                       name="anexo" 
+                                       value="<?= $this->escapeHtmlAttr($anexo) ?>"
+                                       placeholder="Ej: 1234"
+                                       maxlength="20">
+                            </div>
+                        </div>
+                        
+                        <!-- DATOS DEL VEHÍCULO -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">
+                            <i class="bi bi-car-front me-2"></i>
+                            Datos del Vehículo
+                        </h5>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="patente" class="form-label fw-bold">
+                                    Patente
+                                </label>
+                                <input type="text" 
+                                       class="form-control text-uppercase" 
+                                       id="patente" 
+                                       name="patente" 
+                                       value="<?= $this->escapeHtmlAttr($patente) ?>"
+                                       placeholder="AB1234 o ABCD12"
+                                       maxlength="6">
+                                <div class="invalid-feedback">Ingrese una patente válida</div>
+                            </div>
+                        </div>
+                        
+                        <!-- OBSERVACIONES -->
+                        <h5 class="border-bottom pb-2 mb-3 mt-4">
+                            <i class="bi bi-chat-left-text me-2"></i>
+                            Observaciones
+                        </h5>
+                        
+                        <div class="mb-4">
+                            <label for="observaciones" class="form-label fw-bold">
+                                Observaciones Adicionales
+                            </label>
+                            <textarea class="form-control" 
+                                      id="observaciones" 
+                                      name="observaciones" 
+                                      rows="3"
+                                      placeholder="Información adicional relevante..."><?= $this->escapeHtml($observaciones) ?></textarea>
+                        </div>
+                        
+                        <!-- BOTONES -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-save me-2"></i>
+                                Guardar Registro
+                            </button>
+                            
+                            <a href="<?= $baseUrl ?>/qr/<?= $this->escapeHtmlAttr($uuid) ?>" 
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <!-- Información del código QR -->
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <small class="text-muted">
+                            Código QR: <strong><?= $this->escapeHtml($uuid) ?></strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Convertir patente a mayúsculas
+document.getElementById('patente').addEventListener('input', (e) => {
+    e.target.value = e.target.value.toUpperCase();
+});
+
+// Validar formulario antes de enviar
+document.getElementById('formRegistro').addEventListener('submit', (e) => {
+    if (!e.target.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.classList.add('was-validated');
+        
+        APP.Utils.showAlert(
+            'Campos Incompletos',
+            'Por favor completa todos los campos obligatorios marcados con *',
+            'warning'
+        );
+        return;
+    }
+    
+    // Validar RUT si está lleno
+    const rut = document.getElementById('rut').value.trim();
+    if (rut && !APP.Validators.rut(rut)) {
+        e.preventDefault();
+        APP.Utils.showAlert('RUT Inválido', 'El RUT ingresado no es válido', 'error');
+        return;
+    }
+    
+    // Validar patente si está llena
+    const patente = document.getElementById('patente').value.trim();
+    if (patente && !APP.Validators.patente(patente)) {
+        e.preventDefault();
+        APP.Utils.showAlert('Patente Inválida', 'La patente ingresada no tiene un formato válido', 'error');
+        return;
+    }
+});
+</script>

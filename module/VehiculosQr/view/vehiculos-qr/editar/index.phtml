@@ -1,0 +1,116 @@
+<?php
+/**
+ * Vista: Solicitar código para editar datos
+ * Ruta: /vehiculos/editar
+ */
+$error = $this->error ?? '';
+$baseUrl = $this->url('home') . 'vehiculos';
+?>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-warning text-dark text-center py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Editar Datos Registrados
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <?= $this->escapeHtml($error) ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-info-circle me-2"></i>
+                            ¿Necesitas actualizar tus datos?
+                        </h6>
+                        <p class="mb-0">
+                            Ingresa el correo con el que realizaste el registro original. 
+                            Te enviaremos un código de confirmación para acceder al formulario de edición.
+                        </p>
+                    </div>
+                    
+                    <form id="formEditarCorreo" method="post" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="correo" class="form-label fw-bold">
+                                <i class="bi bi-envelope me-2"></i>
+                                Correo Electrónico de Registro
+                            </label>
+                            <input type="email" 
+                                   class="form-control form-control-lg" 
+                                   id="correo" 
+                                   name="correo" 
+                                   placeholder="nombre@municipalidadarica.cl"
+                                   required
+                                   pattern=".*@municipalidadarica\.cl$">
+                            <div class="invalid-feedback">
+                                Debe ingresar un correo válido del dominio @municipalidadarica.cl
+                            </div>
+                            <div class="form-text">
+                                <i class="bi bi-shield-check me-1"></i>
+                                Usa el mismo correo que registraste originalmente
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="bi bi-send me-2"></i>
+                                Enviar Código de Edición
+                            </button>
+                            
+                            <a href="<?= $baseUrl ?>" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Volver
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            <div class="card mt-3 border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-lightbulb me-2"></i>
+                        Importante
+                    </h6>
+                    <ul class="mb-0">
+                        <li>Solo puedes editar el registro asociado a tu correo</li>
+                        <li>El código de edición expira en 15 minutos</li>
+                        <li>No puedes cambiar tu correo electrónico</li>
+                        <li>Para cambios mayores, contacta al administrador</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('formEditarCorreo').addEventListener('submit', (e) => {
+    if (!e.target.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.classList.add('was-validated');
+        return;
+    }
+    
+    const correo = document.getElementById('correo').value.trim();
+    
+    if (!APP.Validators.emailMunicipal(correo)) {
+        e.preventDefault();
+        APP.Utils.showAlert(
+            'Correo Inválido',
+            'Debes usar un correo del dominio @municipalidadarica.cl',
+            'error'
+        );
+    }
+});
+</script>

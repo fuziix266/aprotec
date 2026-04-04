@@ -41,6 +41,12 @@
                 <li><a href="<?= $this->url('home') ?>#links" class="nav-link">Links</a></li>
                 <li><a href="<?= $this->url('home') ?>#contacto" class="nav-link">Contacto</a></li>
                 <li class="nav-dropdown">
+                    <a href="#" class="nav-link nav-link-dropdown">Aplicaciones ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="<?= $this->url('vehiculos-login') ?>">🚗 Vehículos QR</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
                     <a href="#" class="nav-link nav-link-dropdown">Más ▾</a>
                     <ul class="dropdown-menu">
                         <li><a href="<?= $this->url('web', ['action' => 'navidad']) ?>">🎄 Navidad</a></li>
@@ -82,6 +88,12 @@
                         <li><a href="<?= $this->url('web', ['action' => 'noticias']) ?>">Noticias</a></li>
                         <li><a href="<?= $this->url('web', ['action' => 'importante']) ?>">Importante</a></li>
                         <li><a href="<?= $this->url('web', ['action' => 'convenios']) ?>">Convenios</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col-civic">
+                    <h4>Aplicaciones</h4>
+                    <ul>
+                        <li><a href="<?= $this->url('vehiculos-login') ?>">Vehículos QR</a></li>
                     </ul>
                 </div>
                 <div class="footer-col-civic">

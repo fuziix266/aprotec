@@ -1,0 +1,102 @@
+<?php
+/**
+ * Vista: GPS no disponible
+ * Ruta: /qr/:uuid/sin-gps
+ * Muestra advertencia naranja y opciones
+ */
+$uuid = $this->uuid ?? '';
+$baseUrl = $this->url('home') . 'vehiculos';
+?>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Contenedor con fondo naranja y animación -->
+            <div class="sin-gps-container">
+                <div class="text-center mb-4">
+                    <i class="bi bi-geo-alt-fill" style="font-size: 6rem;"></i>
+                </div>
+                
+                <h2 class="text-center mb-3">GPS No Disponible</h2>
+                
+                <div class="alert alert-warning border-0 shadow-sm mb-4" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Ubicación Requerida
+                    </h5>
+                    <p class="mb-0">
+                        Para consultar el estado del vehículo, necesitamos acceso a tu ubicación GPS.
+                        Esto es un requisito de seguridad del sistema municipal.
+                    </p>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="bi bi-lightbulb me-2"></i>
+                            ¿Qué puedes hacer?
+                        </h6>
+                        <ul class="mb-0">
+                            <li>Activa el GPS en tu dispositivo</li>
+                            <li>Permite el acceso a ubicación en tu navegador</li>
+                            <li>Si estás en un edificio, acércate a una ventana</li>
+                            <li>Intenta recargar la página después de activar el GPS</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Opciones -->
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="intentarNuevamente()">
+                        <i class="bi bi-arrow-clockwise me-2"></i>
+                        Intentar Nuevamente
+                    </button>
+                    
+                    <a href="<?= $baseUrl ?>/qr/<?= $this->escapeHtmlAttr($uuid) ?>/solicitar-correo" 
+                       class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-envelope me-2"></i>
+                        Registrar Vehículo (No requiere GPS)
+                    </a>
+                </div>
+                
+                <!-- Información del código -->
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        Código QR: <strong><?= $this->escapeHtml($uuid) ?></strong>
+                    </small>
+                </div>
+            </div>
+            
+            <!-- Información técnica -->
+            <div class="text-center mt-4">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-2"></i>
+                    El registro inicial no requiere GPS, solo las consultas de estado
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function intentarNuevamente() {
+    const uuid = '<?= $this->escapeJs($uuid) ?>';
+    const baseUrl = '<?= $this->escapeJs($baseUrl) ?>';
+    
+    APP.Utils.showLoading('Verificando GPS...');
+    
+    const result = await APP.GeoService.requestLocationAndGet();
+    
+    if (result.success) {
+        const { lat, lon } = result.position;
+        window.location.href = `${baseUrl}/qr/${uuid}/consultar?lat=${lat}&lon=${lon}`;
+    } else {
+        APP.Utils.hideLoading();
+        APP.Utils.showAlert(
+            'GPS No Disponible',
+            result.error,
+            'warning'
+        );
+    }
+}
+</script>

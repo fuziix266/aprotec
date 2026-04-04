@@ -1,0 +1,128 @@
+<?php
+/**
+ * Vista: Solicitar correo para registro
+ * Ruta: /qr/:uuid/solicitar-correo
+ * Formulario para ingresar correo municipal
+ */
+$uuid = $this->uuid ?? '';
+$error = $this->error ?? '';
+$baseUrl = $this->url('home') . 'vehiculos';
+?>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-envelope-at me-2"></i>
+                        Registro de Vehículo
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <?= $this->escapeHtml($error) ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Instrucciones
+                        </h6>
+                        <p class="mb-0">
+                            Ingresa tu correo municipal (@municipalidadarica.cl). 
+                            Recibirás un código de confirmación para continuar con el registro.
+                        </p>
+                    </div>
+                    
+                    <form id="formCorreo" method="post" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="correo" class="form-label fw-bold">
+                                <i class="bi bi-envelope me-2"></i>
+                                Correo Electrónico Municipal
+                            </label>
+                            <input type="email" 
+                                   class="form-control form-control-lg" 
+                                   id="correo" 
+                                   name="correo" 
+                                   placeholder="nombre@municipalidadarica.cl"
+                                   required
+                                   pattern=".*@municipalidadarica\.cl$">
+                            <div class="invalid-feedback">
+                                Debe ingresar un correo válido del dominio @municipalidadarica.cl
+                            </div>
+                            <div class="form-text">
+                                <i class="bi bi-shield-check me-1"></i>
+                                Solo correos institucionales son válidos
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send me-2"></i>
+                                Enviar Código de Confirmación
+                            </button>
+                            
+                            <a href="<?= $baseUrl ?>/qr/<?= $this->escapeHtmlAttr($uuid) ?>" 
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Volver
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <!-- Información del código QR -->
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <small class="text-muted">
+                            Código QR: <strong><?= $this->escapeHtml($uuid) ?></strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ayuda adicional -->
+            <div class="card mt-3 border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-question-circle me-2"></i>
+                        ¿No tienes correo municipal?
+                    </h6>
+                    <p class="card-text mb-0">
+                        Contacta al Departamento de Desarrollo Comunitario (DIDECO) 
+                        para obtener tu correo institucional.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('formCorreo').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!e.target.checkValidity()) {
+        e.target.classList.add('was-validated');
+        return;
+    }
+    
+    const correo = document.getElementById('correo').value.trim();
+    
+    // Validar dominio municipal
+    if (!APP.Validators.emailMunicipal(correo)) {
+        APP.Utils.showAlert(
+            'Correo Inválido',
+            'Debes usar un correo del dominio @municipalidadarica.cl',
+            'error'
+        );
+        return;
+    }
+    
+    // Enviar formulario
+    e.target.submit();
+});
+</script>

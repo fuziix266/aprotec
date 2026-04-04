@@ -1,0 +1,159 @@
+<?php
+/**
+ * Vista: Confirmar código de 6 dígitos
+ * Ruta: /qr/:uuid/confirmar
+ * Validación del código enviado por correo
+ */
+$uuid = $this->uuid ?? '';
+$correo = $this->correo ?? '';
+$error = $this->error ?? '';
+$baseUrl = $this->url('home') . 'vehiculos';
+?>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-shield-check me-2"></i>
+                        Confirmar Código
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <?= $this->escapeHtml($error) ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="alert alert-success" role="alert">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-envelope-check me-2"></i>
+                            Código Enviado
+                        </h6>
+                        <p class="mb-0">
+                            Hemos enviado un código de 6 dígitos a:<br>
+                            <strong><?= $this->escapeHtml($correo) ?></strong>
+                        </p>
+                    </div>
+                    
+                    <form id="formConfirmar" method="post" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="codigo" class="form-label fw-bold">
+                                <i class="bi bi-key me-2"></i>
+                                Código de Confirmación
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg text-center fw-bold" 
+                                   id="codigo" 
+                                   name="codigo" 
+                                   placeholder="000000"
+                                   maxlength="6"
+                                   pattern="[0-9]{6}"
+                                   required
+                                   autocomplete="off"
+                                   style="font-size: 2rem; letter-spacing: 0.5rem;">
+                            <div class="invalid-feedback">
+                                El código debe tener exactamente 6 dígitos numéricos
+                            </div>
+                            <div class="form-text text-center">
+                                <i class="bi bi-clock-history me-1"></i>
+                                El código expira en 15 minutos
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Confirmar y Continuar
+                            </button>
+                            
+                            <button type="button" class="btn btn-outline-secondary" onclick="reenviarCodigo()">
+                                <i class="bi bi-arrow-clockwise me-2"></i>
+                                Reenviar Código
+                            </button>
+                            
+                            <a href="<?= $baseUrl ?>/qr/<?= $this->escapeHtmlAttr($uuid) ?>/solicitar-correo" 
+                               class="btn btn-link">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Cambiar Correo
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <!-- Información del código QR -->
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <small class="text-muted">
+                            Código QR: <strong><?= $this->escapeHtml($uuid) ?></strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ayuda -->
+            <div class="card mt-3 border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-info-circle me-2"></i>
+                        ¿No recibiste el código?
+                    </h6>
+                    <ul class="mb-0">
+                        <li>Revisa tu carpeta de spam o correo no deseado</li>
+                        <li>Espera unos minutos y verifica nuevamente</li>
+                        <li>Usa el botón "Reenviar Código" si es necesario</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-focus en el input de código
+document.getElementById('codigo').focus();
+
+// Solo permitir números
+document.getElementById('codigo').addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+
+// Auto-submit cuando se completen 6 dígitos
+document.getElementById('codigo').addEventListener('input', (e) => {
+    if (e.target.value.length === 6) {
+        document.getElementById('formConfirmar').dispatchEvent(new Event('submit'));
+    }
+});
+
+// Validar formulario
+document.getElementById('formConfirmar').addEventListener('submit', (e) => {
+    if (!e.target.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.classList.add('was-validated');
+        return;
+    }
+    
+    const codigo = document.getElementById('codigo').value;
+    if (codigo.length !== 6) {
+        e.preventDefault();
+        APP.Utils.showAlert('Error', 'El código debe tener 6 dígitos', 'error');
+    }
+});
+
+// Reenviar código
+async function reenviarCodigo() {
+    const confirmado = await APP.Utils.showConfirm(
+        'Reenviar Código',
+        '¿Deseas recibir un nuevo código de confirmación?'
+    );
+    
+    if (confirmado) {
+        const uuid = '<?= $this->escapeJs($uuid) ?>';
+        const baseUrl = '<?= $this->escapeJs($baseUrl) ?>';
+        window.location.href = `${baseUrl}/qr/${uuid}/solicitar-correo`;
+    }
+}
+</script>

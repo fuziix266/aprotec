@@ -701,7 +701,7 @@ h1, h2, h3, h4, h5 {
     border-top: 4px solid var(--gold);
 }
 .footer-grid-civic {
-    display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr;
+    display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr 1fr;
     gap: 40px;
     padding-bottom: 48px;
     border-bottom: 1px solid rgba(255,255,255,0.1);

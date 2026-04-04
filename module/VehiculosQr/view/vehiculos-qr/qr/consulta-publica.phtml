@@ -1,0 +1,106 @@
+<?php
+/**
+ * Vista: Consulta pública de QR
+ * Ruta: /qr/:uuid/consultar (con GPS)
+ * Muestra solo la patente con fondo de color según estado
+ */
+$qr = $this->qr ?? null;
+$registro = $this->registro ?? null;
+$estado = $qr['estado'] ?? 'DESHABILITADO';
+$patente = $registro['patente'] ?? 'SIN REGISTRO';
+
+// Determinar clase de color
+$claseEstado = $estado === 'HABILITADO' ? 'qr-habilitado' : 'qr-deshabilitado';
+$textoEstado = $estado === 'HABILITADO' ? 'Vehículo Habilitado' : 'Vehículo Deshabilitado';
+$iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+?>
+
+<div class="<?= $claseEstado ?> min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="text-center text-white">
+                    <!-- Ícono de estado -->
+                    <div class="mb-4 animate-fade-in">
+                        <i class="bi <?= $iconoEstado ?>" style="font-size: 8rem; text-shadow: 0 4px 8px rgba(0,0,0,0.3);"></i>
+                    </div>
+                    
+                    <!-- Estado del vehículo -->
+                    <h1 class="display-4 fw-bold mb-4" style="text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                        <?= $this->escapeHtml($textoEstado) ?>
+                    </h1>
+                    
+                    <!-- Patente destacada -->
+                    <div class="patente-display mb-4">
+                        <?= $this->escapeHtml($patente) ?>
+                    </div>
+                    
+                    <!-- Información adicional -->
+                    <div class="card bg-white bg-opacity-25 border-0 shadow-lg backdrop-blur">
+                        <div class="card-body p-4">
+                            <h5 class="card-title text-white mb-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Información del Sistema
+                            </h5>
+                            
+                            <div class="row text-white">
+                                <div class="col-6 mb-2">
+                                    <small class="d-block opacity-75">Código QR</small>
+                                    <strong><?= $this->escapeHtml(substr($qr['uuid'], 0, 8)) ?>...</strong>
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <small class="d-block opacity-75">Estado</small>
+                                    <strong><?= $this->escapeHtml($estado) ?></strong>
+                                </div>
+                                <div class="col-12">
+                                    <small class="opacity-75">
+                                        <i class="bi bi-geo-alt me-1"></i>
+                                        Ubicación registrada correctamente
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer informativo -->
+                    <div class="mt-5 pt-3">
+                        <p class="text-white opacity-75 mb-2">
+                            <i class="bi bi-building me-2"></i>
+                            Sistema de Identificación Vehicular Municipal
+                        </p>
+                        <p class="text-white opacity-75 mb-0">
+                            <small>
+                                <i class="bi bi-clock me-1"></i>
+                                Consulta realizada: <?= date('d/m/Y H:i:s') ?>
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Animación de entrada */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Efecto backdrop blur */
+.backdrop-blur {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+</style>

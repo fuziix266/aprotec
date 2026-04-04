@@ -1,0 +1,205 @@
+<?php
+/**
+ * Vista: Consulta completa para inspectores
+ * Ruta: /qr/:uuid/inspector-ver (requiere login + GPS)
+ * Muestra todos los datos del registro
+ */
+$qr = $this->qr ?? null;
+$registro = $this->registro ?? null;
+$historial = $this->historial ?? [];
+$estado = $qr['estado'] ?? 'DESHABILITADO';
+
+// Determinar clase de color
+$claseEstado = $estado === 'HABILITADO' ? 'bg-success' : 'bg-danger';
+$iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+?>
+
+<div class="container py-4">
+    <!-- Encabezado con estado -->
+    <div class="card <?= $claseEstado ?> text-white mb-4 shadow">
+        <div class="card-body text-center py-4">
+            <h2 class="mb-0">
+                <i class="bi <?= $iconoEstado ?> me-2"></i>
+                <?= $this->escapeHtml($estado) ?>
+            </h2>
+            <?php if ($registro && !empty($registro['patente'])): ?>
+                <div class="patente-display mt-3" style="color: white;">
+                    <?= $this->escapeHtml($registro['patente']) ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Datos del Funcionario -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person me-2"></i>
+                        Datos del Funcionario
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <?php if ($registro): ?>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Nombres:</dt>
+                            <dd class="col-sm-8"><?= $this->escapeHtml($registro['nombres'] ?: '-') ?></dd>
+                            
+                            <dt class="col-sm-4">Apellidos:</dt>
+                            <dd class="col-sm-8"><?= $this->escapeHtml($registro['apellidos'] ?: '-') ?></dd>
+                            
+                            <dt class="col-sm-4">RUT:</dt>
+                            <dd class="col-sm-8"><?= $this->escapeHtml($registro['rut'] ?: '-') ?></dd>
+                            
+                            <dt class="col-sm-4">Correo:</dt>
+                            <dd class="col-sm-8">
+                                <a href="mailto:<?= $this->escapeHtmlAttr($registro['correo']) ?>">
+                                    <?= $this->escapeHtml($registro['correo']) ?>
+                                </a>
+                            </dd>
+                            
+                            <dt class="col-sm-4">Celular:</dt>
+                            <dd class="col-sm-8">
+                                <a href="tel:<?= $this->escapeHtmlAttr($registro['celular']) ?>">
+                                    <?= $this->escapeHtml($registro['celular'] ?: '-') ?>
+                                </a>
+                            </dd>
+                        </dl>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">No hay registro asociado</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Datos Laborales -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-building me-2"></i>
+                        Datos Laborales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <?php if ($registro): ?>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Unidad:</dt>
+                            <dd class="col-sm-8"><?= $this->escapeHtml($registro['unidad'] ?: '-') ?></dd>
+                            
+                            <dt class="col-sm-4">Cargo:</dt>
+                            <dd class="col-sm-8"><?= $this->escapeHtml($registro['cargo'] ?: '-') ?></dd>
+                            
+                            <dt class="col-sm-4">Anexo:</dt>
+                            <dd class="col-sm-8"><?= $this->escapeHtml($registro['anexo'] ?: '-') ?></dd>
+                            
+                            <dt class="col-sm-4">Patente:</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge bg-dark fs-6">
+                                    <?= $this->escapeHtml($registro['patente'] ?: '-') ?>
+                                </span>
+                            </dd>
+                            
+                            <?php if ($registro['observaciones']): ?>
+                                <dt class="col-12 mt-3">Observaciones:</dt>
+                                <dd class="col-12">
+                                    <div class="alert alert-light mb-0">
+                                        <?= $this->escapeHtml($registro['observaciones']) ?>
+                                    </div>
+                                </dd>
+                            <?php endif; ?>
+                        </dl>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">No hay datos laborales</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Información del QR -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-qr-code me-2"></i>
+                Información del Código QR
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>UUID:</strong><br>
+                    <code><?= $this->escapeHtml($qr['uuid']) ?></code>
+                </div>
+                <div class="col-md-4">
+                    <strong>Creado:</strong><br>
+                    <?= date('d/m/Y H:i', strtotime($qr['fecha_creacion'])) ?>
+                </div>
+                <div class="col-md-4">
+                    <strong>Estado:</strong><br>
+                    <span class="badge <?= $claseEstado ?>">
+                        <?= $this->escapeHtml($estado) ?>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Historial de Cambios -->
+    <?php if (!empty($historial)): ?>
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Historial de Cambios
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Campo</th>
+                                <th>Valor Anterior</th>
+                                <th>Valor Nuevo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($historial as $h): ?>
+                                <tr>
+                                    <td><?= date('d/m/Y H:i', strtotime($h['fecha_cambio'])) ?></td>
+                                    <td><strong><?= $this->escapeHtml($h['campo_modificado']) ?></strong></td>
+                                    <td class="text-muted"><?= $this->escapeHtml($h['valor_anterior'] ?: '-') ?></td>
+                                    <td class="text-success"><?= $this->escapeHtml($h['valor_nuevo'] ?: '-') ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <!-- Botones de acción -->
+    <div class="d-flex gap-2 justify-content-between">
+        <a href="<?= $this->url('home') ?>vehiculos/admin" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Volver al Panel
+        </a>
+        
+        <button type="button" class="btn btn-primary" onclick="window.print()">
+            <i class="bi bi-printer me-2"></i>
+            Imprimir
+        </button>
+    </div>
+</div>
+
+<style>
+@media print {
+    .btn, .navbar, .footer {
+        display: none !important;
+    }
+}
+</style>

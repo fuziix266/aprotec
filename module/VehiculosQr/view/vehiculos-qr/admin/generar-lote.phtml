@@ -1,0 +1,243 @@
+<?php
+/**
+ * Vista: Generar lote de códigos QR
+ * Ruta: /vehiculos/admin/generar-lote
+ */
+$error = $this->error ?? '';
+$baseUrl = $this->url('home') . 'vehiculos/admin';
+?>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-plus-circle-dotted me-2"></i>
+                        Generar Lote de Códigos QR
+                    </h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <?= $this->escapeHtml($error) ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Información
+                        </h6>
+                        <p class="mb-0">
+                            Los códigos QR se generan con un UUID único y quedan en estado 
+                            <strong>HABILITADO</strong> por defecto. Posteriormente se pueden 
+                            asociar a funcionarios mediante el proceso de registro.
+                        </p>
+                    </div>
+                    
+                    <form id="formGenerarLote" method="post" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="cantidad" class="form-label fw-bold">
+                                <i class="bi bi-hash me-2"></i>
+                                Cantidad de Códigos a Generar
+                            </label>
+                            <input type="number" 
+                                   class="form-control form-control-lg text-center" 
+                                   id="cantidad" 
+                                   name="cantidad" 
+                                   min="1" 
+                                   max="1000"
+                                   value="10"
+                                   required
+                                   style="font-size: 2rem;">
+                            <div class="invalid-feedback">
+                                Ingrese un número entre 1 y 1000
+                            </div>
+                            <div class="form-text text-center">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                Máximo 1000 códigos por lote
+                            </div>
+                        </div>
+                        
+                        <!-- Previsualización -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">
+                                    <i class="bi bi-eye me-2"></i>
+                                    Previsualización
+                                </h6>
+                                <p class="mb-2">
+                                    Se generarán <strong id="preview-cantidad">10</strong> códigos QR
+                                </p>
+                                <small class="text-muted">
+                                    Estado inicial: <span class="badge bg-success">HABILITADO</span>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Opciones adicionales -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="generar_pdf" 
+                                       name="generar_pdf"
+                                       checked>
+                                <label class="form-check-label" for="generar_pdf">
+                                    <i class="bi bi-file-pdf me-2"></i>
+                                    Generar PDF con los códigos QR
+                                </label>
+                            </div>
+                            <small class="text-muted ms-4">
+                                El PDF contendrá todos los códigos en formato 57mm x 93mm
+                            </small>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg" id="btnGenerar">
+                                <i class="bi bi-play-circle me-2"></i>
+                                Generar Lote
+                            </button>
+                            
+                            <a href="<?= $baseUrl ?>" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                    
+                    <!-- Resultado de la generación -->
+                    <div id="resultado" class="mt-4" style="display: none;">
+                        <div class="alert alert-success">
+                            <h5 class="alert-heading">
+                                <i class="bi bi-check-circle me-2"></i>
+                                ¡Generación Exitosa!
+                            </h5>
+                            <p class="mb-3" id="mensajeResultado"></p>
+                            <hr>
+                            <div class="d-grid gap-2">
+                                <a href="#" id="btnDescargarPdf" class="btn btn-primary btn-lg" target="_blank">
+                                    <i class="bi bi-file-pdf me-2"></i>
+                                    Descargar PDF con Códigos QR
+                                </a>
+                                <button type="button" class="btn btn-outline-success" onclick="location.reload()">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>
+                                    Generar Otro Lote
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            <div class="card mt-3 border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="bi bi-lightbulb me-2"></i>
+                        Recomendaciones
+                    </h6>
+                    <ul class="mb-0">
+                        <li>Genera códigos en lotes según tus necesidades inmediatas</li>
+                        <li>Los códigos sin usar no representan problema en el sistema</li>
+                        <li>Puedes deshabilitar códigos que no utilices</li>
+                        <li>Cada código tiene un UUID único e irrepetible</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Actualizar previsualización
+document.getElementById('cantidad').addEventListener('input', (e) => {
+    const cantidad = parseInt(e.target.value) || 0;
+    document.getElementById('preview-cantidad').textContent = cantidad;
+});
+
+// Validar formulario con AJAX
+document.getElementById('formGenerarLote').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!e.target.checkValidity()) {
+        e.target.classList.add('was-validated');
+        return;
+    }
+    
+    const cantidad = parseInt(document.getElementById('cantidad').value);
+    
+    if (cantidad < 1 || cantidad > 1000) {
+        APP.Utils.showAlert(
+            'Cantidad Inválida',
+            'La cantidad debe estar entre 1 y 1000',
+            'error'
+        );
+        return;
+    }
+    
+    // Confirmar generación
+    const confirmado = await APP.Utils.showConfirm(
+        'Generar Lote',
+        `¿Deseas generar ${cantidad} código(s) QR?`
+    );
+    
+    if (!confirmado) {
+        return;
+    }
+    
+    // Deshabilitar botón
+    const btnGenerar = document.getElementById('btnGenerar');
+    const textoOriginal = btnGenerar.innerHTML;
+    btnGenerar.disabled = true;
+    btnGenerar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generando...';
+    
+    try {
+        // Enviar petición AJAX
+        const formData = new FormData(e.target);
+        const response = await fetch(window.location.href, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Ocultar formulario
+            document.getElementById('formGenerarLote').style.display = 'none';
+            
+            // Mostrar resultado
+            document.getElementById('mensajeResultado').textContent = data.message;
+            document.getElementById('btnDescargarPdf').href = data.pdf_url;
+            document.getElementById('resultado').style.display = 'block';
+            
+            // Mostrar alerta de éxito
+            APP.Utils.showAlert(
+                'Éxito',
+                data.message,
+                'success'
+            );
+        } else {
+            APP.Utils.showAlert(
+                'Error',
+                data.error || 'Error al generar códigos QR',
+                'error'
+            );
+            btnGenerar.disabled = false;
+            btnGenerar.innerHTML = textoOriginal;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        APP.Utils.showAlert(
+            'Error',
+            'Error de conexión. Por favor intenta nuevamente.',
+            'error'
+        );
+        btnGenerar.disabled = false;
+        btnGenerar.innerHTML = textoOriginal;
+    }
+});
+</script>

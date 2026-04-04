@@ -1,0 +1,75 @@
+<?php
+/**
+ * Vista: Escaneo inicial de QR
+ * Ruta: /qr/:uuid
+ * Detecta automáticamente GPS y redirige según disponibilidad
+ */
+$uuid = $this->uuid ?? '';
+$baseUrl = $this->url('home') . 'vehiculos';
+?>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-5">
+                    <!-- Ícono QR -->
+                    <div class="mb-4">
+                        <i class="bi bi-qr-code-scan text-primary" style="font-size: 5rem;"></i>
+                    </div>
+                    
+                    <h2 class="card-title mb-3">Código QR Escaneado</h2>
+                    <p class="text-muted mb-4">Verificando ubicación GPS...</p>
+                    
+                    <!-- Spinner de carga -->
+                    <div id="loading-spinner" class="my-4">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Información del código -->
+                    <div class="alert alert-info" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <small>Código: <strong><?= $this->escapeHtml($uuid) ?></strong></small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    <i class="bi bi-shield-check me-2"></i>
+                    Sistema de Identificación Vehicular Municipal
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Detectar GPS automáticamente al cargar la página
+document.addEventListener('DOMContentLoaded', async () => {
+    const uuid = '<?= $this->escapeJs($uuid) ?>';
+    const baseUrl = '<?= $this->escapeJs($baseUrl) ?>';
+    
+    // Verificar si el navegador soporta geolocalización
+    if (!APP.GeoService.isSupported()) {
+        // Redirigir a vista sin GPS
+        window.location.href = `${baseUrl}/qr/${uuid}/sin-gps`;
+        return;
+    }
+    
+    // Intentar obtener ubicación
+    const result = await APP.GeoService.requestLocationAndGet();
+    
+    if (result.success) {
+        // GPS disponible - redirigir a consulta pública
+        const { lat, lon } = result.position;
+        window.location.href = `${baseUrl}/qr/${uuid}/consultar?lat=${lat}&lon=${lon}`;
+    } else {
+        // GPS no disponible - redirigir a vista sin GPS
+        window.location.href = `${baseUrl}/qr/${uuid}/sin-gps`;
+    }
+});
+</script>

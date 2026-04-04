@@ -1,0 +1,306 @@
+<?php
+
+/**
+ * Vista: Gestión de Usuarios del Sistema
+ * Ruta: /vehiculos/admin/usuarios
+ */
+$this->headTitle('Administración de Usuarios');
+?>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1"><i class="bi bi-people-fill me-2"></i> Administración de Usuarios</h2>
+                    <p class="text-muted">Gestión de usuarios del sistema (Administradores e Inspectores)</p>
+                </div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUsuario" onclick="limpiarFormulario()">
+                    <i class="bi bi-person-plus me-2"></i> Nuevo Usuario
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table id="tablaUsuarios" class="table table-hover table-striped align-middle" style="width:100%">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Creado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($this->usuarios as $usuario): ?>
+                                    <tr data-id="<?= $usuario['id'] ?>">
+                                        <td><?= $this->escapeHtml($usuario['id']) ?></td>
+                                        <td><strong><?= $this->escapeHtml($usuario['nombre']) ?></strong></td>
+                                        <td><?= $this->escapeHtml($usuario['correo']) ?></td>
+                                        <td>
+                                            <?php if ($usuario['rol'] === 'ADMIN'): ?>
+                                                <span class="badge bg-danger">
+                                                    <i class="bi bi-shield-fill-check me-1"></i> ADMIN
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge bg-info">
+                                                    <i class="bi bi-person-badge me-1"></i> INSPECTOR
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if ($usuario['activo']): ?>
+                                                <span class="badge bg-success">
+                                                    <i class="bi bi-check-circle me-1"></i> Activo
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary">
+                                                    <i class="bi bi-x-circle me-1"></i> Inactivo
+                                                </span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?= $this->escapeHtml(date('d/m/Y', strtotime($usuario['creado_en']))) ?></td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button type="button" class="btn btn-outline-primary" onclick="editarUsuario(<?= $usuario['id'] ?>)" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <?php if ($usuario['activo']): ?>
+                                                    <button type="button" class="btn btn-outline-warning" onclick="cambiarEstado(<?= $usuario['id'] ?>, 0)" title="Desactivar">
+                                                        <i class="bi bi-toggle-on"></i>
+                                                    </button>
+                                                <?php else: ?>
+                                                    <button type="button" class="btn btn-outline-success" onclick="cambiarEstado(<?= $usuario['id'] ?>, 1)" title="Activar">
+                                                        <i class="bi bi-toggle-off"></i>
+                                                    </button>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Crear/Editar Usuario -->
+<div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalUsuarioLabel">
+                    <i class="bi bi-person-plus me-2"></i> Nuevo Usuario
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formUsuario">
+                    <input type="hidden" id="usuario_id" name="id" value="0">
+
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre Completo <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="correo" name="correo" required placeholder="usuario@municipalidadarica.cl">
+                        <small class="form-text text-muted">Debe ser un correo @municipalidadarica.cl</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña <span id="passwordRequired" class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="password" name="password">
+                        <small class="form-text text-muted" id="passwordHelp">
+                            Mínimo 6 caracteres. Al editar, dejar en blanco para mantener la contraseña actual.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="rol" class="form-label">Rol <span class="text-danger">*</span></label>
+                        <select class="form-select" id="rol" name="rol" required>
+                            <option value="INSPECTOR" selected>Inspector</option>
+                            <option value="ADMIN">Administrador</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="activo" name="activo" value="1" checked>
+                            <label class="form-check-label" for="activo">
+                                Usuario Activo
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="guardarUsuario()">
+                    <i class="bi bi-save me-1"></i> Guardar Usuario
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Inicializar DataTable
+        if ($.fn.DataTable) {
+            $('#tablaUsuarios').DataTable({
+                language: {
+                    url: '<?= $this->basePath('assets/vendors/datatables/js/es-ES.json') ?>'
+                },
+                order: [
+                    [0, 'desc']
+                ],
+                responsive: true,
+                pageLength: 25,
+                columnDefs: [{
+                        orderable: false,
+                        targets: 6
+                    } // Columna de acciones no ordenable
+                ]
+            });
+        }
+    });
+
+    function limpiarFormulario() {
+        document.getElementById('formUsuario').reset();
+        document.getElementById('usuario_id').value = '0';
+        document.getElementById('modalUsuarioLabel').innerHTML = '<i class="bi bi-person-plus me-2"></i> Nuevo Usuario';
+        document.getElementById('passwordRequired').classList.remove('d-none');
+        document.getElementById('password').required = true;
+        document.getElementById('passwordHelp').textContent = 'Mínimo 6 caracteres.';
+    }
+
+    function editarUsuario(id) {
+        fetch(`/vehiculos/admin/obtener-usuario?id=${id}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const usuario = data.usuario;
+                    document.getElementById('usuario_id').value = usuario.id;
+                    document.getElementById('nombre').value = usuario.nombre;
+                    document.getElementById('correo').value = usuario.correo;
+                    document.getElementById('rol').value = usuario.rol;
+                    document.getElementById('activo').checked = usuario.activo == 1;
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').required = false;
+                    document.getElementById('passwordRequired').classList.add('d-none');
+                    document.getElementById('passwordHelp').textContent = 'Dejar en blanco para mantener la contraseña actual.';
+                    document.getElementById('modalUsuarioLabel').innerHTML = '<i class="bi bi-pencil me-2"></i> Editar Usuario';
+
+                    const modal = new bootstrap.Modal(document.getElementById('modalUsuario'));
+                    modal.show();
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'No se pudo cargar los datos del usuario', 'error');
+            });
+    }
+
+    function guardarUsuario() {
+        const form = document.getElementById('formUsuario');
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        // Convertir checkbox a valor numérico
+        formData.set('activo', document.getElementById('activo').checked ? '1' : '0');
+
+        fetch('/vehiculos/admin/guardar-usuario', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire('Error', 'No se pudo guardar el usuario', 'error');
+            });
+    }
+
+    function cambiarEstado(id, activo) {
+        const accion = activo ? 'activar' : 'desactivar';
+        const mensaje = activo ? '¿Deseas activar este usuario?' : '¿Deseas desactivar este usuario?';
+
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: mensaje,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, ' + accion,
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('activo', activo);
+
+                fetch('/vehiculos/admin/cambiar-estado-usuario', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'No se pudo cambiar el estado del usuario', 'error');
+                    });
+            }
+        });
+    }
+</script>

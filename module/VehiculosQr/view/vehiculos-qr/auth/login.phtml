@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * Vista: Login para inspectores y administradores
+ * Ruta: /vehiculos/auth/login
+ * Diseño premium con glassmorphism
+ */
+$error = $this->error ?? '';
+$redirect = $this->redirect ?? '';
+?>
+
+<div class="login-wrapper">
+    <div class="login-card fade-in">
+        <!-- Header con gradiente -->
+        <div class="login-header">
+            <div class="mb-2">
+                <img src="<?= $this->basePath('assets/img/logo-azul.png') ?>"
+                    alt="Logo Municipalidad"
+                    style="height: 44px; filter: brightness(0) invert(1);">
+            </div>
+            <i class="bi bi-shield-lock-fill login-icon"></i>
+            <h3 class="mt-2 mb-1 fw-bold">Acceso al Sistema</h3>
+            <p class="mb-0 opacity-75" style="font-size: 0.9rem;">Panel de Administración — DIDECO Arica</p>
+        </div>
+
+        <!-- Body -->
+        <div class="login-body">
+            <?php if ($error): ?>
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                    <div><?= $this->escapeHtml($error) ?></div>
+                </div>
+            <?php endif; ?>
+
+            <form id="formLogin" method="post" action="<?= $this->url('auth', ['action' => 'login']) ?>" class="needs-validation" novalidate>
+                <?php if ($redirect): ?>
+                    <input type="hidden" name="redirect" value="<?= $this->escapeHtmlAttr($redirect) ?>">
+                <?php endif; ?>
+
+                <div class="mb-3">
+                    <label for="correo" class="form-label fw-bold">
+                        <i class="bi bi-envelope me-1 text-primary"></i>
+                        Correo Electrónico
+                    </label>
+                    <input type="email"
+                        class="form-control form-control-lg"
+                        id="correo"
+                        name="correo"
+                        placeholder="usuario@municipalidadarica.cl"
+                        required
+                        autofocus>
+                    <div class="invalid-feedback">
+                        Ingrese un correo válido
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label fw-bold">
+                        <i class="bi bi-key me-1 text-primary"></i>
+                        Contraseña
+                    </label>
+                    <div class="password-toggle">
+                        <input type="password"
+                            class="form-control form-control-lg"
+                            id="password"
+                            name="password"
+                            required
+                            style="padding-right: 2.5rem;">
+                        <button type="button" class="toggle-btn" onclick="togglePassword()" tabindex="-1" aria-label="Mostrar contraseña">
+                            <i class="bi bi-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
+                    <div class="invalid-feedback">
+                        Ingrese su contraseña
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Iniciar Sesión
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="login-footer">
+            <small class="text-muted">
+                <i class="bi bi-shield-check me-1"></i>
+                Solo funcionarios municipales autorizados
+            </small>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Validación Bootstrap
+    document.getElementById('formLogin').addEventListener('submit', (e) => {
+        if (!e.target.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        e.target.classList.add('was-validated');
+    });
+
+    // Toggle password visibility
+    function togglePassword() {
+        const input = document.getElementById('password');
+        const icon = document.getElementById('toggleIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    }
+</script>
