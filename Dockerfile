@@ -34,11 +34,13 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Reemplazar .htaccess local con el de producción (RewriteBase /)
 RUN cp /var/www/html/docker/htaccess.prod /var/www/html/public/.htaccess
 
-# Permisos correctos para Apache
+# Permisos correctos para Apache y directorio de sesiones PHP
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/public \
     && mkdir -p /var/www/html/data/cache \
-    && mkdir -p /var/www/html/data/session \
+    && mkdir -p /var/www/html/data/sessions \
+    && mkdir -p /var/www/html/data/logs \
+    && chmod -R 777 /var/www/html/data \
     && chown -R www-data:www-data /var/www/html/data
 
 # Puerto expuesto

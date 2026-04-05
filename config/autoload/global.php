@@ -35,23 +35,24 @@ return [
         ],
     ],
 
-    // Configuración de sesiones
+    // Configuración de sesiones - usando filesystem nativo de PHP (no SessionArrayStorage)
     'session_config' => [
-        'cookie_lifetime' => 60 * 60 * 1, // 1 hora
-        'gc_maxlifetime' => 60 * 60 * 24 * 30, // 30 días
-        'name' => 'aprotec_session',
-        'cookie_httponly' => true,
-        'cookie_secure' => false, // Cambiar a true en producción con HTTPS
-        'use_cookies' => true,
-        'cookie_path' => '/',
+        'cookie_lifetime' => 60 * 60 * 8, // 8 horas
+        'gc_maxlifetime'  => 60 * 60 * 24 * 30, // 30 días
+        'name'            => 'aprotec_session',
+        'cookie_httponly'  => true,
+        'cookie_secure'   => false, // false para compatibilidad con proxies inversos
+        'use_cookies'     => true,
+        'cookie_path'     => '/',
+        'use_strict_mode' => false,
+        'save_path'       => '/var/www/html/data/sessions',
     ],
     'session_manager' => [
-        'validators' => [
-            RemoteAddr::class,
-            HttpUserAgent::class,
-        ],
+        // Validators deshabilitados: causan problemas en Docker con proxy inverso (Traefik)
+        // ya que RemoteAddr cambia entre requests detrás del proxy
+        'validators' => [],
     ],
     'session_storage' => [
-        'type' => SessionArrayStorage::class,
+        'type' => \Laminas\Session\Storage\SessionStorage::class,
     ],
 ];
