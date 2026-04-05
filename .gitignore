@@ -6,6 +6,7 @@
 /config/autoload/local.php
 /config/autoload/phinx.local.php
 /config/autoload/doctrine.local.php
+/config/development.config.php
 
 # Cache y logs
 /data/cache/

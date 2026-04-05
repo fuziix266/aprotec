@@ -252,7 +252,7 @@ class AdminController extends AbstractActionController
 
         try {
             $siteUrl = rtrim($this->appConfig['site_url'] ?? 'https://www.aprotec.cl', '/');
-            $url = $siteUrl . '/Vehiculos/qr/' . $uuid;
+            $url = $siteUrl . '/vehiculos/qr/' . $uuid;
 
             // Generar QR usando Endroid/QrCode
             $qrResult = Builder::create()
@@ -666,7 +666,7 @@ class AdminController extends AbstractActionController
 
                 // Generar imagen QR en memoria
                 $siteUrl = rtrim($this->appConfig['site_url'] ?? 'https://www.aprotec.cl', '/');
-                $url = $siteUrl . '/Vehiculos/qr/' . $codigo['uuid_qr'];
+                $url = $siteUrl . '/vehiculos/qr/' . $codigo['uuid_qr'];
 
                 $qrResult = Builder::create()
                     ->writer(new PngWriter())

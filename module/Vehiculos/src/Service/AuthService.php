@@ -22,8 +22,8 @@ class AuthService
     public function login(string $correo, string $password): array
     {
         // Validar dominio — el sistema es para la Municipalidad de Arica
-        if (!str_ends_with($correo, '@municipalidadarica.cl')) {
-            return ['success' => false, 'error' => 'Solo se permiten correos @municipalidadarica.cl'];
+        if (!str_ends_with($correo, '@aprotec.cl') && !str_ends_with($correo, '@municipalidadarica.cl')) {
+            return ['success' => false, 'error' => 'Solo se permiten correos @aprotec.cl o @municipalidadarica.cl'];
         }
 
         $usuario = $this->usuariosRepo->findByCorreo($correo);

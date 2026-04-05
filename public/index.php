@@ -3,9 +3,27 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+// Log persistente para producción (captura errores que display_errors no muestra)
+$logDir = __DIR__ . '/../data/logs';
+if (!is_dir($logDir)) {
+    @mkdir($logDir, 0777, true);
+}
+ini_set('log_errors', 1);
+ini_set('error_log', $logDir . '/php_errors.log');
+
 function debug_fatal_handler() {
     $error = error_get_last();
     if($error !== NULL) {
+        $logDir = __DIR__ . '/../data/logs';
+        $msg = sprintf(
+            "[%s] FATAL: %s in %s on line %d\n",
+            date('Y-m-d H:i:s'),
+            $error['message'],
+            $error['file'],
+            $error['line']
+        );
+        @file_put_contents($logDir . '/fatal_errors.log', $msg, FILE_APPEND);
+
         http_response_code(500);
         echo "<pre>FATAL ERROR:\n";
         print_r($error);
