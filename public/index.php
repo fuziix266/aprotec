@@ -3,6 +3,17 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+function debug_fatal_handler() {
+    $error = error_get_last();
+    if($error !== NULL) {
+        http_response_code(500);
+        echo "<pre>FATAL ERROR:\n";
+        print_r($error);
+        echo "</pre>";
+    }
+}
+register_shutdown_function("debug_fatal_handler");
+
 /**
  * This makes our life easier when dealing with paths. Everything is relative
  * to the application root now.
