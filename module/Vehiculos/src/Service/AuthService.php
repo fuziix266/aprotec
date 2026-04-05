@@ -1,8 +1,8 @@
 <?php
 
-namespace VehiculosQr\Service;
+namespace Vehiculos\Service;
 
-use VehiculosQr\Repository\QrUsuariosRepository;
+use Vehiculos\Repository\QrUsuariosRepository;
 use Laminas\Session\Container as SessionContainer;
 
 class AuthService
@@ -106,4 +106,3 @@ class AuthService
         return $this->isAuthenticated() && $this->session->rol === 'INSPECTOR';
     }
 }
-

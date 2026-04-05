@@ -1,6 +1,6 @@
 <?php
 
-namespace VehiculosQr;
+namespace Vehiculos;
 
 use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\Db\ResultSet\ResultSet;
@@ -17,7 +17,7 @@ class Module implements ConfigProviderInterface, BootstrapListenerInterface
         $eventManager = $e->getApplication()->getEventManager();
         $sharedEventManager = $eventManager->getSharedManager();
 
-        // Cambiar layout cuando se despacha un controller de VehiculosQr
+        // Cambiar layout cuando se despacha un controller de Vehiculos
         $sharedEventManager->attach(
             'Laminas\Stdlib\DispatchableInterface',
             MvcEvent::EVENT_DISPATCH,
@@ -25,8 +25,8 @@ class Module implements ConfigProviderInterface, BootstrapListenerInterface
                 $controller = $event->getTarget();
                 $controllerClass = get_class($controller);
 
-                // Solo si el controller pertenece al namespace VehiculosQr
-                if (str_starts_with($controllerClass, 'VehiculosQr\\')) {
+                // Solo si el controller pertenece al namespace Vehiculos
+                if (str_starts_with($controllerClass, 'Vehiculos\\')) {
                     $event->getViewModel()->setTemplate('layout/layout_vehiculos');
                 }
             },

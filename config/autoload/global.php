@@ -5,7 +5,7 @@ use Laminas\Session\Validator\HttpUserAgent;
 use Laminas\Session\Validator\RemoteAddr;
 
 return [
-    // Configuración de rutas de la aplicación (VehiculosQr)
+    // Configuración de rutas de la aplicación (Vehiculos)
     'app_config' => [
         'base_url' => '/',
         'base_path' => __DIR__ . '/../../public',

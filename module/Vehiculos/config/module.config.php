@@ -1,6 +1,6 @@
 <?php
 
-namespace VehiculosQr;
+namespace Vehiculos;
 
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
@@ -12,7 +12,7 @@ return [
             'vehiculos-qr' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/qr/:uuid',
+                    'route' => '/Vehiculos/qr/:uuid',
                     'constraints' => [
                         'uuid' => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}',
                     ],
@@ -25,7 +25,7 @@ return [
             'vehiculos-qr-solicitar-correo' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/qr/:uuid/solicitar-correo',
+                    'route' => '/Vehiculos/qr/:uuid/solicitar-correo',
                     'constraints' => [
                         'uuid' => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}',
                     ],
@@ -38,7 +38,7 @@ return [
             'vehiculos-qr-confirmar' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/qr/:uuid/confirmar',
+                    'route' => '/Vehiculos/qr/:uuid/confirmar',
                     'constraints' => [
                         'uuid' => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}',
                     ],
@@ -51,7 +51,7 @@ return [
             'vehiculos-qr-formulario' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/qr/:uuid/formulario',
+                    'route' => '/Vehiculos/qr/:uuid/formulario',
                     'constraints' => [
                         'uuid' => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}',
                     ],
@@ -64,7 +64,7 @@ return [
             'vehiculos-qr-guardar-datos' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/qr/:uuid/guardar-datos',
+                    'route' => '/Vehiculos/qr/:uuid/guardar-datos',
                     'constraints' => [
                         'uuid' => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}',
                     ],
@@ -77,7 +77,7 @@ return [
             'vehiculos-qr-consultar' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/qr/:uuid/consultar',
+                    'route' => '/Vehiculos/qr/:uuid/consultar',
                     'constraints' => [
                         'uuid' => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}',
                     ],
@@ -92,7 +92,7 @@ return [
             'vehiculos-editar' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/editar',
+                    'route' => '/Vehiculos/editar',
                     'defaults' => [
                         'controller' => Controller\EditarController::class,
                         'action' => 'index',
@@ -102,7 +102,7 @@ return [
             'vehiculos-editar-solicitar-codigo' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/editar/solicitar-codigo',
+                    'route' => '/Vehiculos/editar/solicitar-codigo',
                     'defaults' => [
                         'controller' => Controller\EditarController::class,
                         'action' => 'solicitar-codigo',
@@ -112,7 +112,7 @@ return [
             'vehiculos-editar-validar-codigo' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/editar/validar-codigo',
+                    'route' => '/Vehiculos/editar/validar-codigo',
                     'defaults' => [
                         'controller' => Controller\EditarController::class,
                         'action' => 'validar-codigo',
@@ -122,7 +122,7 @@ return [
             'vehiculos-editar-formulario' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/editar/formulario',
+                    'route' => '/Vehiculos/editar/formulario',
                     'defaults' => [
                         'controller' => Controller\EditarController::class,
                         'action' => 'formulario',
@@ -132,7 +132,7 @@ return [
             'vehiculos-editar-guardar' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/editar/guardar',
+                    'route' => '/Vehiculos/editar/guardar',
                     'defaults' => [
                         'controller' => Controller\EditarController::class,
                         'action' => 'guardar',
@@ -144,7 +144,7 @@ return [
             'auth' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/auth[/:action]',
+                    'route' => '/Vehiculos/auth[/:action]',
                     'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ],
@@ -157,7 +157,7 @@ return [
             'vehiculos-login' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/login',
+                    'route' => '/Vehiculos/login',
                     'defaults' => [
                         'controller' => Controller\AuthController::class,
                         'action' => 'login',
@@ -167,7 +167,7 @@ return [
             'vehiculos-logout' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/logout',
+                    'route' => '/Vehiculos/logout',
                     'defaults' => [
                         'controller' => Controller\AuthController::class,
                         'action' => 'logout',
@@ -179,7 +179,7 @@ return [
             'vehiculos-inspector-qr' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/inspector/qr/:uuid',
+                    'route' => '/Vehiculos/inspector/qr/:uuid',
                     'constraints' => [
                         'uuid' => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}',
                     ],
@@ -194,7 +194,7 @@ return [
             'vehiculos-admin' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin',
+                    'route' => '/Vehiculos/admin',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         // Cambiado a 'gestion' para usar la nueva acción por defecto
@@ -205,7 +205,7 @@ return [
             'vehiculos-admin-generar-lote' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/generar-lote',
+                    'route' => '/Vehiculos/admin/generar-lote',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'generar-lote',
@@ -215,7 +215,7 @@ return [
             'vehiculos-admin-exportar-qr-existentes' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/exportar-qr-existentes',
+                    'route' => '/Vehiculos/admin/exportar-qr-existentes',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'exportar-qr-existentes',
@@ -225,7 +225,7 @@ return [
             'vehiculos-admin-cambiar-estado' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/cambiar-estado',
+                    'route' => '/Vehiculos/admin/cambiar-estado',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'cambiar-estado',
@@ -235,7 +235,7 @@ return [
             'vehiculos-admin-eliminar-qr' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/eliminar-qr',
+                    'route' => '/Vehiculos/admin/eliminar-qr',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'eliminar-qr',
@@ -245,7 +245,7 @@ return [
             'vehiculos-admin-obtener-datos' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/obtener-datos',
+                    'route' => '/Vehiculos/admin/obtener-datos',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'obtener-datos',
@@ -255,7 +255,7 @@ return [
             'vehiculos-admin-guardar-edicion' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/guardar-edicion',
+                    'route' => '/Vehiculos/admin/guardar-edicion',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'guardar-edicion',
@@ -265,7 +265,7 @@ return [
             'vehiculos-admin-logs' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/logs[/:id]',
+                    'route' => '/Vehiculos/admin/logs[/:id]',
                     'constraints' => [
                         'id' => '[a-zA-Z0-9_-]*',
                     ],
@@ -278,7 +278,7 @@ return [
             'vehiculos-admin-usuarios' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/usuarios',
+                    'route' => '/Vehiculos/admin/usuarios',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'usuarios',
@@ -288,7 +288,7 @@ return [
             'vehiculos-admin-qr' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/qr/:uuid',
+                    'route' => '/Vehiculos/admin/qr/:uuid',
                     'constraints' => [
                         'uuid' => '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}',
                     ],
@@ -301,7 +301,7 @@ return [
             'vehiculos-admin-guardar-usuario' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/guardar-usuario',
+                    'route' => '/Vehiculos/admin/guardar-usuario',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'guardar-usuario',
@@ -311,7 +311,7 @@ return [
             'vehiculos-admin-obtener-usuario' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/obtener-usuario',
+                    'route' => '/Vehiculos/admin/obtener-usuario',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'obtener-usuario',
@@ -321,7 +321,7 @@ return [
             'vehiculos-admin-cambiar-estado-usuario' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route' => '/vehiculosqr/admin/cambiar-estado-usuario',
+                    'route' => '/Vehiculos/admin/cambiar-estado-usuario',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'cambiar-estado-usuario',
@@ -343,4 +343,3 @@ return [
         ],
     ],
 ];
-

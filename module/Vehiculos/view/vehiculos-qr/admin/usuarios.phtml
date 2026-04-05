@@ -231,7 +231,7 @@ $this->headTitle('Administración de Usuarios');
         // Convertir checkbox a valor numérico
         formData.set('activo', document.getElementById('activo').checked ? '1' : '0');
 
-        fetch('/vehiculosqr/admin/guardar-usuario', {
+        fetch('/Vehiculos/admin/guardar-usuario', {
                 method: 'POST',
                 body: formData
             })
@@ -276,7 +276,7 @@ $this->headTitle('Administración de Usuarios');
                 formData.append('id', id);
                 formData.append('activo', activo);
 
-                fetch('/vehiculosqr/admin/cambiar-estado-usuario', {
+                fetch('/Vehiculos/admin/cambiar-estado-usuario', {
                         method: 'POST',
                         body: formData
                     })
@@ -304,4 +304,3 @@ $this->headTitle('Administración de Usuarios');
         });
     }
 </script>
-

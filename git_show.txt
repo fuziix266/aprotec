@@ -2,44 +2,44 @@ commit 34d341d80b6222c9d9e684ada3aad2fc1ad67c49
 Author: fuziix <fuziix@gmail.com>
 Date:   Sat Apr 4 14:15:12 2026 -0300
 
-    Actualización general: Mejoras en registro deportivo (iframe), vista de eventos y nuevos recursos de VehiculosQr
+    Actualización general: Mejoras en registro deportivo (iframe), vista de eventos y nuevos recursos de Vehiculos
 
  composer.json                                      |   8 +-
  composer.lock                                      | 845 +++++++++++++++++--
  config/application.config.php                      |   1 +
  config/autoload/global.php                         |  25 +-
  .../Application/view/layout/layout_vehiculos.phtml | 391 +++++++++
- module/VehiculosQr/config/module.config.php        | 322 ++++++++
- .../VehiculosQr/src/Controller/AdminController.php | 789 ++++++++++++++++++
- .../VehiculosQr/src/Controller/AuthController.php  |  74 ++
+ module/Vehiculos/config/module.config.php        | 322 ++++++++
+ .../Vehiculos/src/Controller/AdminController.php | 789 ++++++++++++++++++
+ .../Vehiculos/src/Controller/AuthController.php  |  74 ++
  .../src/Controller/EditarController.php            | 179 ++++
- module/VehiculosQr/src/Controller/QrController.php | 241 ++++++
- module/VehiculosQr/src/Module.php                  | 167 ++++
+ module/Vehiculos/src/Controller/QrController.php | 241 ++++++
+ module/Vehiculos/src/Module.php                  | 167 ++++
  .../src/Repository/QrCodigosRepository.php         |  82 ++
  .../src/Repository/QrHistorialRepository.php       |  33 +
  .../src/Repository/QrLogsRepository.php            |  53 ++
  .../src/Repository/QrRegistrosRepository.php       |  57 ++
  .../src/Repository/QrUsuariosRepository.php        |  51 ++
- module/VehiculosQr/src/Service/AuthService.php     | 108 +++
- module/VehiculosQr/src/Service/CorreoService.php   | 116 +++
- .../VehiculosQr/src/Service/QrHistorialService.php |  47 ++
- module/VehiculosQr/src/Service/QrLogService.php    |  57 ++
- module/VehiculosQr/src/Service/QrService.php       | 403 +++++++++
+ module/Vehiculos/src/Service/AuthService.php     | 108 +++
+ module/Vehiculos/src/Service/CorreoService.php   | 116 +++
+ .../Vehiculos/src/Service/QrHistorialService.php |  47 ++
+ module/Vehiculos/src/Service/QrLogService.php    |  57 ++
+ module/Vehiculos/src/Service/QrService.php       | 403 +++++++++
  .../view/vehiculos-qr/admin/generar-lote.phtml     | 243 ++++++
  .../view/vehiculos-qr/admin/gestion.phtml          | 736 +++++++++++++++++
  .../view/vehiculos-qr/admin/index.phtml            |  10 +
- .../VehiculosQr/view/vehiculos-qr/admin/logs.phtml | 212 +++++
+ .../Vehiculos/view/vehiculos-qr/admin/logs.phtml | 212 +++++
  .../view/vehiculos-qr/admin/usuarios.phtml         | 306 +++++++
- .../VehiculosQr/view/vehiculos-qr/auth/login.phtml | 119 +++
+ .../Vehiculos/view/vehiculos-qr/auth/login.phtml | 119 +++
  .../view/vehiculos-qr/editar/confirmar.phtml       | 132 +++
  .../view/vehiculos-qr/editar/formulario.phtml      | 264 ++++++
  .../view/vehiculos-qr/editar/index.phtml           | 116 +++
  .../view/vehiculos-qr/qr/confirmar.phtml           | 159 ++++
  .../view/vehiculos-qr/qr/consulta-publica.phtml    | 106 +++
  .../view/vehiculos-qr/qr/formulario.phtml          | 268 ++++++
- .../VehiculosQr/view/vehiculos-qr/qr/index.phtml   |  75 ++
+ .../Vehiculos/view/vehiculos-qr/qr/index.phtml   |  75 ++
  .../view/vehiculos-qr/qr/inspector-ver.phtml       | 205 +++++
- .../VehiculosQr/view/vehiculos-qr/qr/sin-gps.phtml | 102 +++
+ .../Vehiculos/view/vehiculos-qr/qr/sin-gps.phtml | 102 +++
  .../view/vehiculos-qr/qr/solicitar-correo.phtml    | 128 +++
  module/Web/view/layout/layout.phtml                |  12 +
  public/assets/css/styles.css                       | 903 +++++++++++++++++++++

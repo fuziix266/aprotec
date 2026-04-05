@@ -8,7 +8,7 @@ return [
         'Laminas\Db',
         'Application',
         'Web',
-        'VehiculosQr',  // Módulo QR Vehículos Municipales
+        'Vehiculos',  // Módulo QR Vehículos Municipales
     ],
     'module_listener_options' => [
         'module_paths' => [

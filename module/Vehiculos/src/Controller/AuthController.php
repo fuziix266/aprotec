@@ -1,11 +1,11 @@
 <?php
 
-namespace VehiculosQr\Controller;
+namespace Vehiculos\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
-use VehiculosQr\Service\AuthService;
+use Vehiculos\Service\AuthService;
 
 class AuthController extends AbstractActionController
 {

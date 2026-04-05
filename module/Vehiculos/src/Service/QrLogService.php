@@ -1,8 +1,8 @@
 <?php
 
-namespace VehiculosQr\Service;
+namespace Vehiculos\Service;
 
-use VehiculosQr\Repository\QrLogsRepository;
+use Vehiculos\Repository\QrLogsRepository;
 
 class QrLogService
 {
@@ -35,7 +35,7 @@ class QrLogService
             'gps_accuracy_m' => $gps['accuracy'] ?? null,
             'fecha_evento' => date('Y-m-d H:i:s'),
         ];
-        
+
         return $this->logsRepo->create($data);
     }
 
@@ -54,7 +54,7 @@ class QrLogService
     {
         return $this->logsRepo->findEscaneosSospechosos($qrCodigoId);
     }
-    
+
     /**
      * Obtener logs globales de todo el sistema
      */

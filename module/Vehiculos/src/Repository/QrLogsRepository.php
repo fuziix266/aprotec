@@ -1,6 +1,6 @@
 <?php
 
-namespace VehiculosQr\Repository;
+namespace Vehiculos\Repository;
 
 use Laminas\Db\TableGateway\TableGatewayInterface;
 use Laminas\Db\Sql\Select;
@@ -20,7 +20,7 @@ class QrLogsRepository
         $select->where(['qr_codigo_id' => $qrCodigoId]);
         $select->order('fecha_evento DESC');
         $select->limit($limit);
-        
+
         $rowset = $this->tableGateway->selectWith($select);
         return iterator_to_array($rowset);
     }
@@ -38,16 +38,16 @@ class QrLogsRepository
                 AND (TIME(fecha_evento) < '06:00:00' OR TIME(fecha_evento) > '22:00:00')
                 ORDER BY fecha_evento DESC
                 LIMIT 50";
-        
+
         $adapter = $this->tableGateway->getAdapter();
         $statement = $adapter->createStatement($sql, [$qrCodigoId]);
         $result = $statement->execute();
-        
+
         $logs = [];
         foreach ($result as $row) {
             $logs[] = (array) $row;
         }
-        
+
         return $logs;
     }
 
@@ -62,16 +62,16 @@ class QrLogsRepository
                 LEFT JOIN qr_usuarios u ON l.usuario_id = u.id
                 ORDER BY l.fecha_evento DESC
                 LIMIT ?";
-        
+
         $adapter = $this->tableGateway->getAdapter();
         $statement = $adapter->createStatement($sql, [$limit]);
         $result = $statement->execute();
-        
+
         $logs = [];
         foreach ($result as $row) {
             $logs[] = (array) $row;
         }
-        
+
         return $logs;
     }
 
@@ -87,16 +87,16 @@ class QrLogsRepository
                 WHERE (TIME(l.fecha_evento) < '06:00:00' OR TIME(l.fecha_evento) > '22:00:00')
                 ORDER BY l.fecha_evento DESC
                 LIMIT ?";
-        
+
         $adapter = $this->tableGateway->getAdapter();
         $statement = $adapter->createStatement($sql, [$limit]);
         $result = $statement->execute();
-        
+
         $logs = [];
         foreach ($result as $row) {
             $logs[] = (array) $row;
         }
-        
+
         return $logs;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace VehiculosQr\Repository;
+namespace Vehiculos\Repository;
 
 use Laminas\Db\TableGateway\TableGatewayInterface;
 use Laminas\Db\Sql\Select;
@@ -20,7 +20,7 @@ class QrHistorialRepository
         $select->where(['qr_registro_id' => $registroId]);
         $select->order('fecha_evento DESC');
         $select->limit($limit);
-        
+
         $rowset = $this->tableGateway->selectWith($select);
         return iterator_to_array($rowset);
     }

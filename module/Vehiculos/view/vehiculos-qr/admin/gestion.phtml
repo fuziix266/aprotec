@@ -280,7 +280,7 @@ $baseUrl = $this->url('vehiculos-admin');
 
         try {
             // Generar el diseño del QR (57mm x 93mm = 215px x 351px a 96 DPI)
-            const qrUrl = `<?= $this->escapeHtml($this->siteUrl ?? 'https://www.aprotec.cl') ?>/vehiculosqr/qr/${uuid}`;
+            const qrUrl = `<?= $this->escapeHtml($this->siteUrl ?? 'https://www.aprotec.cl') ?>/Vehiculos/qr/${uuid}`;
 
             // Crear canvas oculto para generar la imagen
             const canvas = document.createElement('canvas');
@@ -297,7 +297,7 @@ $baseUrl = $this->url('vehiculos-admin');
             const qrImg = new Image();
             qrImg.crossOrigin = 'anonymous';
             // Ruta local: /vehiculos/admin/qr/:uuid (ruta vehiculos-admin-qr)
-            qrImg.src = '/vehiculosqr/admin/qr/' + uuid;
+            qrImg.src = '/Vehiculos/admin/qr/' + uuid;
 
             await new Promise((resolve, reject) => {
                 qrImg.onload = resolve;
@@ -389,7 +389,7 @@ $baseUrl = $this->url('vehiculos-admin');
     }
 
     async function descargarQr(uuid) {
-        window.open('/vehiculosqr/admin/descargar-qr?uuid=' + uuid, '_blank');
+        window.open('/Vehiculos/admin/descargar-qr?uuid=' + uuid, '_blank');
     }
 
     async function editarDatos(uuid, qrId) {
@@ -410,7 +410,7 @@ $baseUrl = $this->url('vehiculos-admin');
 
         try {
             // Obtener datos del registro
-            const response = await fetch('/vehiculosqr/admin/obtener-datos?uuid=' + uuid);
+            const response = await fetch('/Vehiculos/admin/obtener-datos?uuid=' + uuid);
             const data = await response.json();
 
             if (!data.success) {
@@ -606,7 +606,7 @@ $baseUrl = $this->url('vehiculos-admin');
             formData.append('observaciones', document.getElementById('edit_observaciones').value.trim());
 
             const response = await APP.ApiService.postForm(
-                '/vehiculosqr/admin/guardar-edicion',
+                '/Vehiculos/admin/guardar-edicion',
                 formData
             );
 
@@ -638,7 +638,7 @@ $baseUrl = $this->url('vehiculos-admin');
                 formData.append('estado', nuevoEstado);
 
                 const response = await APP.ApiService.postForm(
-                    '/vehiculosqr/admin/cambiar-estado',
+                    '/Vehiculos/admin/cambiar-estado',
                     formData
                 );
 
@@ -668,7 +668,7 @@ $baseUrl = $this->url('vehiculos-admin');
                 formData.append('uuid', uuid);
 
                 const response = await APP.ApiService.postForm(
-                    '/vehiculosqr/admin/eliminar-qr',
+                    '/Vehiculos/admin/eliminar-qr',
                     formData
                 );
 
@@ -770,4 +770,3 @@ $baseUrl = $this->url('vehiculos-admin');
 </script>
 
 <!-- DataTables: cargado globalmente desde el layout principal -->
-

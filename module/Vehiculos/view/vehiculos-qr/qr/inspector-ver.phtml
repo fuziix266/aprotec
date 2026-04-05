@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Vista: Consulta completa para inspectores
  * Ruta: /qr/:uuid/inspector-ver (requiere login + GPS)
@@ -29,7 +30,7 @@ $iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-
             <?php endif; ?>
         </div>
     </div>
-    
+
     <div class="row">
         <!-- Datos del Funcionario -->
         <div class="col-lg-6 mb-4">
@@ -45,20 +46,20 @@ $iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-
                         <dl class="row mb-0">
                             <dt class="col-sm-4">Nombres:</dt>
                             <dd class="col-sm-8"><?= $this->escapeHtml($registro['nombres'] ?: '-') ?></dd>
-                            
+
                             <dt class="col-sm-4">Apellidos:</dt>
                             <dd class="col-sm-8"><?= $this->escapeHtml($registro['apellidos'] ?: '-') ?></dd>
-                            
+
                             <dt class="col-sm-4">RUT:</dt>
                             <dd class="col-sm-8"><?= $this->escapeHtml($registro['rut'] ?: '-') ?></dd>
-                            
+
                             <dt class="col-sm-4">Correo:</dt>
                             <dd class="col-sm-8">
                                 <a href="mailto:<?= $this->escapeHtmlAttr($registro['correo']) ?>">
                                     <?= $this->escapeHtml($registro['correo']) ?>
                                 </a>
                             </dd>
-                            
+
                             <dt class="col-sm-4">Celular:</dt>
                             <dd class="col-sm-8">
                                 <a href="tel:<?= $this->escapeHtmlAttr($registro['celular']) ?>">
@@ -72,7 +73,7 @@ $iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-
                 </div>
             </div>
         </div>
-        
+
         <!-- Datos Laborales -->
         <div class="col-lg-6 mb-4">
             <div class="card shadow-sm h-100">
@@ -87,20 +88,20 @@ $iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-
                         <dl class="row mb-0">
                             <dt class="col-sm-4">Unidad:</dt>
                             <dd class="col-sm-8"><?= $this->escapeHtml($registro['unidad'] ?: '-') ?></dd>
-                            
+
                             <dt class="col-sm-4">Cargo:</dt>
                             <dd class="col-sm-8"><?= $this->escapeHtml($registro['cargo'] ?: '-') ?></dd>
-                            
+
                             <dt class="col-sm-4">Anexo:</dt>
                             <dd class="col-sm-8"><?= $this->escapeHtml($registro['anexo'] ?: '-') ?></dd>
-                            
+
                             <dt class="col-sm-4">Patente:</dt>
                             <dd class="col-sm-8">
                                 <span class="badge bg-dark fs-6">
                                     <?= $this->escapeHtml($registro['patente'] ?: '-') ?>
                                 </span>
                             </dd>
-                            
+
                             <?php if ($registro['observaciones']): ?>
                                 <dt class="col-12 mt-3">Observaciones:</dt>
                                 <dd class="col-12">
@@ -117,7 +118,7 @@ $iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-
             </div>
         </div>
     </div>
-    
+
     <!-- Información del QR -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-secondary text-white">
@@ -145,7 +146,7 @@ $iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-
             </div>
         </div>
     </div>
-    
+
     <!-- Historial de Cambios -->
     <?php if (!empty($historial)): ?>
         <div class="card shadow-sm mb-4">
@@ -181,14 +182,14 @@ $iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-
             </div>
         </div>
     <?php endif; ?>
-    
+
     <!-- Botones de acción -->
     <div class="d-flex gap-2 justify-content-between">
-        <a href="<?= $this->url('home') ?>vehiculosqr/admin" class="btn btn-secondary">
+        <a href="<?= $this->url('home') ?>Vehiculos/admin" class="btn btn-secondary">
             <i class="bi bi-arrow-left me-2"></i>
             Volver al Panel
         </a>
-        
+
         <button type="button" class="btn btn-primary" onclick="window.print()">
             <i class="bi bi-printer me-2"></i>
             Imprimir
@@ -197,10 +198,12 @@ $iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-
 </div>
 
 <style>
-@media print {
-    .btn, .navbar, .footer {
-        display: none !important;
-    }
-}
-</style>
+    @media print {
 
+        .btn,
+        .navbar,
+        .footer {
+            display: none !important;
+        }
+    }
+</style>

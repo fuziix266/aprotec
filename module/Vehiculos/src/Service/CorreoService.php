@@ -1,6 +1,6 @@
 <?php
 
-namespace VehiculosQr\Service;
+namespace Vehiculos\Service;
 
 use Laminas\Mail\Message;
 use Laminas\Mail\Transport\Smtp as SmtpTransport;
@@ -23,7 +23,7 @@ class CorreoService
         $asunto = 'Código de Confirmación - Sistema QR Vehículos';
         $anio = date('Y');
         $siteUrl = $this->smtpConfig['site_url'] ?? 'www.aprotec.cl';
-        
+
         $mensaje = <<<HTML
 <!DOCTYPE html>
 <html>
@@ -54,13 +54,13 @@ class CorreoService
         </div>
         <div class="footer">
             <p>&copy; {$anio} APROTEC</p>
-            <p>{$siteUrl}/vehiculosqr</p>
+            <p>{$siteUrl}/Vehiculos</p>
         </div>
     </div>
 </body>
 </html>
 HTML;
-        
+
         return $this->enviarCorreo($destinatario, $asunto, $mensaje);
     }
 
@@ -75,31 +75,31 @@ HTML;
         try {
             $message = new Message();
             $message->setFrom($fromEmail, $fromName)
-                    ->addTo($destinatario)
-                    ->setSubject($asunto);
-            
+                ->addTo($destinatario)
+                ->setSubject($asunto);
+
             $htmlPart = new \Laminas\Mime\Part($cuerpoHtml);
             $htmlPart->type = 'text/html';
             $htmlPart->charset = 'utf-8';
-            
+
             $body = new \Laminas\Mime\Message();
             $body->setParts([$htmlPart]);
-            
+
             $message->setBody($body);
             $message->setEncoding('UTF-8');
-            
+
             $contentTypeHeader = new \Laminas\Mail\Header\ContentType();
             $contentTypeHeader->setType('text/html');
             $contentTypeHeader->addParameter('charset', 'utf-8');
             $message->getHeaders()->addHeader($contentTypeHeader);
-            
+
             // En desarrollo, solo simular envío
             if (getenv('APP_ENV') === 'development' || php_sapi_name() === 'cli-server') {
                 error_log("CORREO SIMULADO: {$destinatario} - {$asunto}");
                 error_log("Código: " . strip_tags($cuerpoHtml));
                 return true;
             }
-            
+
             // Configurar SMTP desde config inyectada
             $smtpHost = $this->smtpConfig['host'] ?? '';
             $smtpPort = (int) ($this->smtpConfig['port'] ?? 587);
@@ -123,10 +123,10 @@ HTML;
                     'ssl' => $smtpSsl,
                 ],
             ]);
-            
+
             $transport = new SmtpTransport($options);
             $transport->send($message);
-            
+
             return true;
         } catch (\Exception $e) {
             error_log("Error al enviar correo: " . $e->getMessage());

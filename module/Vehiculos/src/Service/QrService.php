@@ -1,10 +1,10 @@
 <?php
 
-namespace VehiculosQr\Service;
+namespace Vehiculos\Service;
 
-use VehiculosQr\Repository\QrCodigosRepository;
-use VehiculosQr\Repository\QrRegistrosRepository;
-use VehiculosQr\Repository\QrHistorialRepository;
+use Vehiculos\Repository\QrCodigosRepository;
+use Vehiculos\Repository\QrRegistrosRepository;
+use Vehiculos\Repository\QrHistorialRepository;
 
 class QrService
 {
@@ -52,17 +52,17 @@ class QrService
     public function crearCodigoQr(string $observaciones = null): array
     {
         $uuid = $this->qrCodigosRepo->generateUuid();
-        
+
         $data = [
             'uuid_qr' => $uuid,
             'estado' => 'PENDIENTE',
             'fecha_creacion' => date('Y-m-d H:i:s'),
             'observaciones' => $observaciones,
         ];
-        
+
         $id = $this->qrCodigosRepo->create($data);
         $data['id'] = $id;
-        
+
         return $data;
     }
 
@@ -93,9 +93,9 @@ class QrService
     {
         $codigo = $this->generarCodigoConfirmacion();
         $expira = date('Y-m-d H:i:s', strtotime('+30 minutes'));
-        
+
         $existente = $this->qrRegistrosRepo->findByQrCodigoId($qrCodigoId);
-        
+
         $data = [
             'correo_funcionario' => $correo,
             'codigo_confirmacion' => $codigo,
@@ -103,7 +103,7 @@ class QrService
             'correo_confirmado' => 0,
             'creado_por_ip' => $ip,
         ];
-        
+
         if ($existente) {
             // Actualizar
             $this->qrRegistrosRepo->updateByQrCodigoId($qrCodigoId, $data);
@@ -113,7 +113,7 @@ class QrService
             $data['qr_codigo_id'] = $qrCodigoId;
             $registroId = $this->qrRegistrosRepo->create($data);
         }
-        
+
         $data['id'] = $registroId;
         return $data;
     }
@@ -124,36 +124,36 @@ class QrService
     public function confirmarCodigo(int $qrCodigoId, string $codigo): array
     {
         $registro = $this->qrRegistrosRepo->findByQrCodigoId($qrCodigoId);
-        
+
         if (!$registro) {
             return ['success' => false, 'error' => 'Registro no encontrado'];
         }
-        
+
         if ($registro['correo_confirmado'] == 1) {
             return ['success' => false, 'error' => 'El correo ya fue confirmado'];
         }
-        
+
         if ($registro['codigo_confirmacion'] !== $codigo) {
             return ['success' => false, 'error' => 'Código incorrecto'];
         }
-        
+
         $expira = strtotime($registro['codigo_confirmacion_expira']);
         if (time() > $expira) {
             return ['success' => false, 'error' => 'El código ha expirado'];
         }
-        
+
         // Confirmar
         $this->qrRegistrosRepo->updateByQrCodigoId($qrCodigoId, [
             'correo_confirmado' => 1,
             'fecha_confirmacion' => date('Y-m-d H:i:s'),
         ]);
-        
+
         // Cambiar estado del QR a ASIGNADO
         $this->qrCodigosRepo->update($qrCodigoId, [
             'estado' => 'ASIGNADO',
             'fecha_asignacion' => date('Y-m-d H:i:s'),
         ]);
-        
+
         return ['success' => true];
     }
 
@@ -163,14 +163,14 @@ class QrService
     public function guardarDatos(int $qrCodigoId, array $datos, string $ip, string $correoQuien): bool
     {
         $registro = $this->qrRegistrosRepo->findByQrCodigoId($qrCodigoId);
-        
+
         if (!$registro) {
             return false;
         }
-        
+
         $datosAnteriores = $registro;
         $esPrimeraVez = empty($registro['fecha_registro']);
-        
+
         $datosActualizar = [
             'nombres' => $datos['nombres'] ?? '',
             'apellidos' => $datos['apellidos'] ?? '',
@@ -184,13 +184,13 @@ class QrService
             'actualizado_por_ip' => $ip,
             'fecha_actualizacion' => date('Y-m-d H:i:s'),
         ];
-        
+
         if ($esPrimeraVez) {
             $datosActualizar['fecha_registro'] = date('Y-m-d H:i:s');
         }
-        
+
         $this->qrRegistrosRepo->updateByQrCodigoId($qrCodigoId, $datosActualizar);
-        
+
         // Registrar en historial
         $cambios = $this->calcularCambios($datosAnteriores, $datosActualizar);
         $this->qrHistorialRepo->create([
@@ -202,7 +202,7 @@ class QrService
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
             'fecha_evento' => date('Y-m-d H:i:s'),
         ]);
-        
+
         return true;
     }
 
@@ -213,16 +213,16 @@ class QrService
     {
         $cambios = [];
         $campos = ['nombres', 'apellidos', 'rut', 'unidad', 'cargo', 'celular', 'anexo', 'patente', 'observaciones'];
-        
+
         foreach ($campos as $campo) {
             $valorAnterior = $anterior[$campo] ?? '';
             $valorNuevo = $nuevo[$campo] ?? '';
-            
+
             if ($valorAnterior != $valorNuevo) {
                 $cambios[$campo] = [$valorAnterior, $valorNuevo];
             }
         }
-        
+
         return $cambios;
     }
 
@@ -235,10 +235,10 @@ class QrService
         if (!$qr) {
             return null;
         }
-        
+
         $registro = $this->obtenerRegistroPorQrId($qr['id']);
         $historial = $registro ? $this->qrHistorialRepo->findByRegistroId($registro['id'], 10) : [];
-        
+
         return [
             'qr' => $qr,
             'registro' => $registro,
@@ -253,18 +253,18 @@ class QrService
     public function cambiarEstado(int $qrId, string $nuevoEstado): bool
     {
         $estadosValidos = ['PENDIENTE', 'HABILITADO', 'DESHABILITADO'];
-        
+
         if (!in_array($nuevoEstado, $estadosValidos)) {
             error_log("QrService::cambiarEstado - Estado inválido: {$nuevoEstado}");
             return false;
         }
-        
+
         $resultado = $this->qrCodigosRepo->update($qrId, ['estado' => $nuevoEstado]);
-        
+
         if ($resultado) {
             error_log("QrService::cambiarEstado - QR ID {$qrId} cambió a estado {$nuevoEstado}");
         }
-        
+
         return $resultado;
     }
 
@@ -283,13 +283,13 @@ class QrService
     {
         try {
             $registroId = $this->qrRegistrosRepo->create($datos);
-            
+
             if ($registroId) {
                 // Actualizar fecha de asignación en qr_codigos
                 $this->qrCodigosRepo->update($qrCodigoId, [
                     'fecha_asignacion' => date('Y-m-d H:i:s')
                 ]);
-                
+
                 // Registrar en historial
                 $usuario = 'admin';
                 $this->qrHistorialRepo->create([
@@ -301,10 +301,10 @@ class QrService
                     'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
                     'fecha_evento' => date('Y-m-d H:i:s'),
                 ]);
-                
+
                 return true;
             }
-            
+
             return false;
         } catch (\Exception $e) {
             error_log("Error al crear registro: " . $e->getMessage());
@@ -319,21 +319,21 @@ class QrService
     {
         try {
             $registro = $this->qrRegistrosRepo->findByQrCodigoId($qrCodigoId);
-            
+
             if (!$registro) {
                 return false;
             }
-            
+
             $datosAnteriores = $registro;
-            
+
             // Actualizar el registro
             $resultado = $this->qrRegistrosRepo->updateByQrCodigoId($qrCodigoId, $datos);
-            
+
             if ($resultado) {
                 // Registrar en historial
                 $cambios = $this->calcularCambios($datosAnteriores, $datos);
                 $usuario = 'admin';
-                
+
                 $this->qrHistorialRepo->create([
                     'qr_registro_id' => $registro['id'],
                     'quien_correo' => $usuario,
@@ -343,10 +343,10 @@ class QrService
                     'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
                     'fecha_evento' => date('Y-m-d H:i:s'),
                 ]);
-                
+
                 return true;
             }
-            
+
             return false;
         } catch (\Exception $e) {
             error_log("Error al actualizar datos: " . $e->getMessage());
@@ -413,14 +413,14 @@ class QrService
             }
 
             $registro = $this->obtenerRegistroPorQrId($qr['id']);
-            
+
             // Si tiene registro asociado, borrar su historial y luego el registro
             if ($registro) {
                 $this->qrHistorialRepo->deleteByRegistroId($registro['id']);
             }
             // Borrar todos los registros apuntando a este QR
             $this->qrRegistrosRepo->deleteByQrCodigoId($qr['id']);
-            
+
             // Finalmente borrar el QR
             return $this->qrCodigosRepo->delete($qr['id']);
         } catch (\Exception $e) {

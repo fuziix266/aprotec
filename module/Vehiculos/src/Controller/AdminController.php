@@ -1,14 +1,14 @@
 <?php
 
-namespace VehiculosQr\Controller;
+namespace Vehiculos\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
-use VehiculosQr\Service\QrService;
-use VehiculosQr\Service\QrLogService;
-use VehiculosQr\Service\AuthService;
-use VehiculosQr\Repository\QrUsuariosRepository;
+use Vehiculos\Service\QrService;
+use Vehiculos\Service\QrLogService;
+use Vehiculos\Service\AuthService;
+use Vehiculos\Repository\QrUsuariosRepository;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
@@ -146,7 +146,7 @@ class AdminController extends AbstractActionController
         try {
             // Obtenemos todos los QRs (máx 100k)
             $codigos = $this->qrService->listarQrPaginado(1, 100000);
-            
+
             if (empty($codigos)) {
                 return new JsonModel([
                     'success' => false,
@@ -252,7 +252,7 @@ class AdminController extends AbstractActionController
 
         try {
             $siteUrl = rtrim($this->appConfig['site_url'] ?? 'https://www.aprotec.cl', '/');
-            $url = $siteUrl . '/vehiculosqr/qr/' . $uuid;
+            $url = $siteUrl . '/Vehiculos/qr/' . $uuid;
 
             // Generar QR usando Endroid/QrCode
             $qrResult = Builder::create()
@@ -348,10 +348,10 @@ class AdminController extends AbstractActionController
     {
         $idParam = $this->params()->fromRoute('id');
         $id = $idParam ? (int) $idParam : 0;
-        
+
         $qr = null;
         $registro = null;
-        
+
         // Si hay un param de la ruta (ya sea ID numérico o UUID)
         if ($idParam) {
             $qr = $this->qrService->buscarPorUuid($idParam);
@@ -666,7 +666,7 @@ class AdminController extends AbstractActionController
 
                 // Generar imagen QR en memoria
                 $siteUrl = rtrim($this->appConfig['site_url'] ?? 'https://www.aprotec.cl', '/');
-                $url = $siteUrl . '/vehiculosqr/qr/' . $codigo['uuid_qr'];
+                $url = $siteUrl . '/Vehiculos/qr/' . $codigo['uuid_qr'];
 
                 $qrResult = Builder::create()
                     ->writer(new PngWriter())
@@ -880,4 +880,3 @@ class AdminController extends AbstractActionController
         }
     }
 }
-

@@ -1,6 +1,6 @@
 <?php
 
-namespace VehiculosQr\Repository;
+namespace Vehiculos\Repository;
 
 use Laminas\Db\TableGateway\TableGatewayInterface;
 use Laminas\Db\Sql\Select;
@@ -37,11 +37,11 @@ class QrCodigosRepository
     public function findAllPaginated(int $page = 1, int $limit = 20): array
     {
         $offset = ($page - 1) * $limit;
-        
+
         $select = new Select($this->tableGateway->getTable());
         $select->limit($limit)->offset($offset);
         $select->order('id DESC');
-        
+
         $rowset = $this->tableGateway->selectWith($select);
         return iterator_to_array($rowset);
     }
@@ -72,11 +72,14 @@ class QrCodigosRepository
     {
         return sprintf(
             '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
             mt_rand(0, 0xffff),
             mt_rand(0, 0x0fff) | 0x4000,
             mt_rand(0, 0x3fff) | 0x8000,
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
         );
     }
 }

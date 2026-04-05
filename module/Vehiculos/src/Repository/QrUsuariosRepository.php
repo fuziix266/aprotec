@@ -1,10 +1,10 @@
 <?php
 
-namespace VehiculosQr\Repository;
+namespace Vehiculos\Repository;
 
 use Laminas\Db\TableGateway\TableGatewayInterface;
 
-class QrRegistrosRepository
+class QrUsuariosRepository
 {
     private TableGatewayInterface $tableGateway;
 
@@ -20,18 +20,17 @@ class QrRegistrosRepository
         return $row ? (array) $row : null;
     }
 
-    public function findByQrCodigoId(int $qrCodigoId): ?array
+    public function findByCorreo(string $correo): ?array
     {
-        $rowset = $this->tableGateway->select(['qr_codigo_id' => $qrCodigoId]);
+        $rowset = $this->tableGateway->select(['correo' => $correo]);
         $row = $rowset->current();
         return $row ? (array) $row : null;
     }
 
-    public function findByCorreo(string $correo): ?array
+    public function findAll(): array
     {
-        $rowset = $this->tableGateway->select(['correo_funcionario' => $correo]);
-        $row = $rowset->current();
-        return $row ? (array) $row : null;
+        $rowset = $this->tableGateway->select();
+        return iterator_to_array($rowset);
     }
 
     public function create(array $data): int
@@ -45,18 +44,8 @@ class QrRegistrosRepository
         return (bool) $this->tableGateway->update($data, ['id' => $id]);
     }
 
-    public function updateByQrCodigoId(int $qrCodigoId, array $data): bool
-    {
-        return (bool) $this->tableGateway->update($data, ['qr_codigo_id' => $qrCodigoId]);
-    }
-
     public function delete(int $id): bool
     {
         return (bool) $this->tableGateway->delete(['id' => $id]);
-    }
-
-    public function deleteByQrCodigoId(int $qrCodigoId): bool
-    {
-        return (bool) $this->tableGateway->delete(['qr_codigo_id' => $qrCodigoId]);
     }
 }

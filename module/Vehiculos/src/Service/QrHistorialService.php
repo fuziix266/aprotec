@@ -1,8 +1,8 @@
 <?php
 
-namespace VehiculosQr\Service;
+namespace Vehiculos\Service;
 
-use VehiculosQr\Repository\QrHistorialRepository;
+use Vehiculos\Repository\QrHistorialRepository;
 
 class QrHistorialService
 {
@@ -33,7 +33,7 @@ class QrHistorialService
             'user_agent' => $userAgent ?? $_SERVER['HTTP_USER_AGENT'] ?? null,
             'fecha_evento' => date('Y-m-d H:i:s'),
         ];
-        
+
         return $this->historialRepo->create($data);
     }
 

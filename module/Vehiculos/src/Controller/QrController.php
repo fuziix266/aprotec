@@ -1,15 +1,15 @@
 <?php
 
-namespace VehiculosQr\Controller;
+namespace Vehiculos\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Model\JsonModel;
-use VehiculosQr\Service\QrService;
-use VehiculosQr\Service\CorreoService;
-use VehiculosQr\Service\QrLogService;
-use VehiculosQr\Service\QrHistorialService;
-use VehiculosQr\Service\AuthService;
+use Vehiculos\Service\QrService;
+use Vehiculos\Service\CorreoService;
+use Vehiculos\Service\QrLogService;
+use Vehiculos\Service\QrHistorialService;
+use Vehiculos\Service\AuthService;
 
 class QrController extends AbstractActionController
 {
@@ -37,19 +37,19 @@ class QrController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
         $qr = $this->qrService->buscarPorUuid($uuid);
-        
+
         if (!$qr) {
             return new ViewModel(['error' => 'Código QR no encontrado']);
         }
-        
+
         $registro = $this->qrService->obtenerRegistroPorQrId($qr['id']);
-        
+
         $view = new ViewModel([
             'qr' => $qr,
             'registro' => $registro,
             'uuid' => $uuid,
         ]);
-        
+
         $view->setTemplate('vehiculos-qr/qr/index');
         return $view;
     }
@@ -62,10 +62,10 @@ class QrController extends AbstractActionController
         if (!$this->getRequest()->isPost()) {
             return $this->redirect()->toRoute('vehiculos-qr', ['uuid' => $this->params()->fromRoute('uuid')]);
         }
-        
+
         $uuid = $this->params()->fromRoute('uuid');
         $correo = $this->getRequest()->getPost('correo');
-        
+
         // Validar dominio
         if (!str_ends_with($correo, '@aprotec.cl')) {
             return new JsonModel([
@@ -73,21 +73,21 @@ class QrController extends AbstractActionController
                 'error' => 'Solo se permiten correos @aprotec.cl'
             ]);
         }
-        
+
         $qr = $this->qrService->buscarPorUuid($uuid);
         if (!$qr) {
             return new JsonModel(['success' => false, 'error' => 'QR no encontrado']);
         }
-        
+
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $registro = $this->qrService->crearRegistroInicial($qr['id'], $correo, $ip);
-        
+
         // Enviar código por email
         $enviado = $this->correoService->enviarCodigoConfirmacion($correo, $registro['codigo_confirmacion']);
-        
+
         // Registrar log (sin GPS para registro inicial)
         $this->logService->registrarEvento($qr['id'], 'REGISTRO_INICIAL', null, null, $ip);
-        
+
         return new JsonModel([
             'success' => $enviado,
             'message' => $enviado ? 'Código enviado al correo' : 'Error al enviar código'
@@ -102,17 +102,17 @@ class QrController extends AbstractActionController
         if (!$this->getRequest()->isPost()) {
             return $this->redirect()->toRoute('vehiculos-qr', ['uuid' => $this->params()->fromRoute('uuid')]);
         }
-        
+
         $uuid = $this->params()->fromRoute('uuid');
         $codigo = $this->getRequest()->getPost('codigo');
-        
+
         $qr = $this->qrService->buscarPorUuid($uuid);
         if (!$qr) {
             return new JsonModel(['success' => false, 'error' => 'QR no encontrado']);
         }
-        
+
         $resultado = $this->qrService->confirmarCodigo($qr['id'], $codigo);
-        
+
         return new JsonModel($resultado);
     }
 
@@ -123,11 +123,11 @@ class QrController extends AbstractActionController
     {
         $uuid = $this->params()->fromRoute('uuid');
         $datos = $this->qrService->obtenerDatosCompletos($uuid);
-        
+
         if (!$datos || !$datos['registro'] || $datos['registro']['correo_confirmado'] != 1) {
             return $this->redirect()->toRoute('vehiculos-qr', ['uuid' => $uuid]);
         }
-        
+
         $view = new ViewModel($datos);
         $view->setTemplate('vehiculos-qr/qr/formulario');
         return $view;
@@ -141,24 +141,24 @@ class QrController extends AbstractActionController
         if (!$this->getRequest()->isPost()) {
             return $this->redirect()->toRoute('vehiculos-qr', ['uuid' => $this->params()->fromRoute('uuid')]);
         }
-        
+
         $uuid = $this->params()->fromRoute('uuid');
         $qr = $this->qrService->buscarPorUuid($uuid);
-        
+
         if (!$qr) {
             return new JsonModel(['success' => false, 'error' => 'QR no encontrado']);
         }
-        
+
         $registro = $this->qrService->obtenerRegistroPorQrId($qr['id']);
         if (!$registro || $registro['correo_confirmado'] != 1) {
             return new JsonModel(['success' => false, 'error' => 'Correo no confirmado']);
         }
-        
+
         $datos = $this->getRequest()->getPost()->toArray();
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-        
+
         $guardado = $this->qrService->guardarDatos($qr['id'], $datos, $ip, $registro['correo_funcionario']);
-        
+
         return new JsonModel([
             'success' => $guardado,
             'message' => $guardado ? 'Datos guardados correctamente' : 'Error al guardar datos'
@@ -173,29 +173,29 @@ class QrController extends AbstractActionController
         if (!$this->getRequest()->isPost()) {
             return new JsonModel(['success' => false, 'error' => 'Método no permitido']);
         }
-        
+
         $uuid = $this->params()->fromRoute('uuid');
         $gps = $this->getRequest()->getPost('gps');
-        
+
         // Validar GPS
         if (!isset($gps['lat']) || !isset($gps['lon'])) {
             return new JsonModel(['success' => false, 'error' => 'GPS requerido', 'requiere_gps' => true]);
         }
-        
+
         $qr = $this->qrService->buscarPorUuid($uuid);
         if (!$qr) {
             return new JsonModel(['success' => false, 'error' => 'QR no encontrado']);
         }
-        
+
         $registro = $this->qrService->obtenerRegistroPorQrId($qr['id']);
-        
+
         // Registrar log con GPS
         $this->logService->registrarEvento($qr['id'], 'CONSULTA_PUBLICA', [
             'lat' => $gps['lat'],
             'lon' => $gps['lon'],
             'accuracy' => $gps['accuracy'] ?? null
         ]);
-        
+
         return new JsonModel([
             'success' => true,
             'estado' => $qr['estado'],
@@ -214,14 +214,14 @@ class QrController extends AbstractActionController
         if (!isset($container->user_id)) {
             return $this->redirect()->toRoute('vehiculos-login');
         }
-        
+
         $uuid = $this->params()->fromRoute('uuid');
         $datos = $this->qrService->obtenerDatosCompletos($uuid);
-        
+
         if (!$datos) {
             return new ViewModel(['error' => 'QR no encontrado']);
         }
-        
+
         // Si es POST con GPS, registrar log
         if ($this->getRequest()->isPost()) {
             $gps = $this->getRequest()->getPost('gps');
@@ -233,10 +233,9 @@ class QrController extends AbstractActionController
                 ], $container->user_id);
             }
         }
-        
+
         $view = new ViewModel($datos);
         $view->setTemplate('vehiculos-qr/qr/inspector-ver');
         return $view;
     }
 }
-
