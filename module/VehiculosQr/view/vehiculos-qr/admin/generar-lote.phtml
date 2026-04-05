@@ -131,8 +131,26 @@ $baseUrl = $this->url('home') . 'vehiculos/admin';
                         </div>
                     </div>
                 </div>
+                </div>
             </div>
             
+            <!-- Botón Exportar Todos -->
+            <div class="card mt-3 border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title text-primary">
+                        <i class="bi bi-cloud-download me-2"></i>
+                        Exportación Histórica
+                    </h6>
+                    <p class="mb-3 text-muted">Vuelve a descargar un documento PDF con todos los códigos QR registrados actualmente en el sistema.</p>
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-outline-primary" id="btnExportarExistentes">
+                            <i class="bi bi-file-earmark-pdf me-2"></i>
+                            Exportar QRs Existentes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Información adicional -->
             <div class="card mt-3 border-0 bg-light">
                 <div class="card-body">
@@ -238,6 +256,58 @@ document.getElementById('formGenerarLote').addEventListener('submit', async (e) 
         );
         btnGenerar.disabled = false;
         btnGenerar.innerHTML = textoOriginal;
+    }
+});
+
+// Exportar QR existentes
+document.getElementById('btnExportarExistentes').addEventListener('click', async (e) => {
+    e.preventDefault();
+    
+    const confirmado = await APP.Utils.showConfirm(
+        'Exportar Códigos QR',
+        '¿Deseas generar un PDF consolidado con todos los códigos QR que ya existen en el sistema? Esto puede demorar unos segundos.'
+    );
+    
+    if (!confirmado) {
+        return;
+    }
+    
+    const btnExportar = document.getElementById('btnExportarExistentes');
+    const textoOriginal = btnExportar.innerHTML;
+    btnExportar.disabled = true;
+    btnExportar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generando PDF...';
+    
+    try {
+        const response = await fetch('<?= $this->url("home") ?>vehiculos/admin/exportar-qr-existentes', {
+            method: 'POST'
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            APP.Utils.showAlert(
+                'Éxito',
+                data.message,
+                'success'
+            );
+            window.open(data.pdf_url, '_blank');
+        } else {
+            APP.Utils.showAlert(
+                'Error',
+                data.error || 'Error al exportar los códigos QR',
+                'error'
+            );
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        APP.Utils.showAlert(
+            'Error',
+            'Error de conexión. Por favor intenta nuevamente.',
+            'error'
+        );
+    } finally {
+        btnExportar.disabled = false;
+        btnExportar.innerHTML = textoOriginal;
     }
 });
 </script>

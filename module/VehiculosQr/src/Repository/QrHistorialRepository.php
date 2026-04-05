@@ -30,4 +30,9 @@ class QrHistorialRepository
         $this->tableGateway->insert($data);
         return (int) $this->tableGateway->getLastInsertValue();
     }
+
+    public function deleteByRegistroId(int $registroId): bool
+    {
+        return (bool) $this->tableGateway->delete(['qr_registro_id' => $registroId]);
+    }
 }

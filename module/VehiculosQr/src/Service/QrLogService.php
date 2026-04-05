@@ -54,4 +54,20 @@ class QrLogService
     {
         return $this->logsRepo->findEscaneosSospechosos($qrCodigoId);
     }
+    
+    /**
+     * Obtener logs globales de todo el sistema
+     */
+    public function obtenerLogsGlobales(int $limit = 200): array
+    {
+        return $this->logsRepo->findGlobal($limit);
+    }
+
+    /**
+     * Obtener escaneos sospechosos globales de todo el sistema
+     */
+    public function obtenerEscaneosSospechososGlobales(int $limit = 50): array
+    {
+        return $this->logsRepo->findEscaneosSospechososGlobal($limit);
+    }
 }

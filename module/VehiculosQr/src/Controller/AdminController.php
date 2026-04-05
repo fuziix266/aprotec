@@ -70,7 +70,7 @@ class AdminController extends AbstractActionController
         $this->layout()->setVariable('visible-hero', 0);
 
         $page = (int) $this->params()->fromQuery('page', 1);
-        $limit = 20;
+        $limit = 100000; // Load all directly to allow DataTables global search
 
         $codigos = $this->qrService->listarQrPaginado($page, $limit);
         $total = $this->qrService->contarQr();
@@ -133,6 +133,40 @@ class AdminController extends AbstractActionController
         ]);
         $view->setTemplate('vehiculos-qr/admin/generar-lote');
         return $view;
+    }
+
+    /**
+     * Exportar todos los códigos QR ya generados sumados en un PDF
+     */
+    public function exportarQrExistentesAction()
+    {
+        try {
+            // Obtenemos todos los QRs (máx 100k)
+            $codigos = $this->qrService->listarQrPaginado(1, 100000);
+            
+            if (empty($codigos)) {
+                return new JsonModel([
+                    'success' => false,
+                    'error' => 'No existen códigos QR para exportar.'
+                ]);
+            }
+
+            // Generar PDF con los QR
+            $pdfUrl = $this->generarPdfConQr($codigos);
+
+            return new JsonModel([
+                'success' => true,
+                'cantidad' => count($codigos),
+                'pdf_url' => $pdfUrl,
+                'message' => "Se exportaron " . count($codigos) . " códigos QR exitosamente."
+            ]);
+        } catch (\Exception $e) {
+            error_log("Error al exportar QR existentes: " . $e->getMessage());
+            return new JsonModel([
+                'success' => false,
+                'error' => 'Error al exportar los códigos QR: ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -214,7 +248,7 @@ class AdminController extends AbstractActionController
         }
 
         try {
-            $url = 'https://www.didecoarica.cl/vehiculos/qr/' . $uuid;
+            $url = 'https://www.aprotec.cl/vehiculosqr/qr/' . $uuid;
 
             // Generar QR usando Endroid/QrCode
             $qrResult = Builder::create()
@@ -308,16 +342,26 @@ class AdminController extends AbstractActionController
      */
     public function logsAction()
     {
-        $id = (int) $this->params()->fromRoute('id');
-
-        $qr = $this->qrService->buscarPorUuid($this->params()->fromRoute('id'));
-        if (!$qr) {
-            $qr = ['id' => $id]; // Buscar por ID numérico como fallback
+        $idParam = $this->params()->fromRoute('id');
+        $id = $idParam ? (int) $idParam : 0;
+        
+        $qr = null;
+        $registro = null;
+        
+        // Si hay un param de la ruta (ya sea ID numérico o UUID)
+        if ($idParam) {
+            $qr = $this->qrService->buscarPorUuid($idParam);
+            if (!$qr) {
+                $qr = ['id' => $id]; // Buscar por ID numérico como fallback
+            }
+            $logs = $this->logService->obtenerLogsPorQr($id, 200);
+            $sospechosos = $this->logService->obtenerEscaneosSospechosos($id);
+            $registro = $this->qrService->obtenerRegistroPorQrId($id);
+        } else {
+            // Log general (sin ID)
+            $logs = $this->logService->obtenerLogsGlobales(200);
+            $sospechosos = $this->logService->obtenerEscaneosSospechososGlobales(50);
         }
-
-        $logs = $this->logService->obtenerLogsPorQr($id, 200);
-        $sospechosos = $this->logService->obtenerEscaneosSospechosos($id);
-        $registro = $this->qrService->obtenerRegistroPorQrId($id);
 
         $view = new ViewModel([
             'qr' => $qr,
@@ -502,6 +546,49 @@ class AdminController extends AbstractActionController
     }
 
     /**
+     * Eliminar un código QR permanentemente
+     */
+    public function eliminarQrAction()
+    {
+        if (!$this->getRequest()->isPost()) {
+            return new JsonModel(['success' => false, 'error' => 'Método no permitido']);
+        }
+
+        $uuid = $this->getRequest()->getPost('uuid');
+
+        if (empty($uuid)) {
+            return new JsonModel(['success' => false, 'error' => 'Identificador no proporcionado']);
+        }
+
+        try {
+            // Eliminar mediante el servicio
+            $resultado = $this->qrService->eliminarQrPermanente($uuid);
+
+            if ($resultado) {
+                // Registrar la acción
+                $usuarioActual = $this->authService->getCurrentUser();
+                error_log("Admin '{$usuarioActual['nombre']}' eliminó el QR '{$uuid}'");
+
+                return new JsonModel([
+                    'success' => true,
+                    'message' => 'Código QR eliminado exitosamente'
+                ]);
+            }
+
+            return new JsonModel([
+                'success' => false,
+                'error' => 'No se pudo eliminar el código QR'
+            ]);
+        } catch (\Exception $e) {
+            error_log("Error al eliminar QR '{$uuid}': " . $e->getMessage());
+            return new JsonModel([
+                'success' => false,
+                'error' => 'Ocurrió un error al intentar eliminar: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
      * Generar PDF con códigos QR (57mm x 93mm en hojas A4)
      */
     private function generarPdfConQr(array $codigos): string
@@ -574,7 +661,7 @@ class AdminController extends AbstractActionController
                 $y = $margen + $espacioV + ($fila * ($qrHeight + $espacioV));
 
                 // Generar imagen QR en memoria
-                $url = 'https://www.didecoarica.cl/vehiculos/qr/' . $codigo['uuid_qr'];
+                $url = 'https://www.aprotec.cl/vehiculosqr/qr/' . $codigo['uuid_qr'];
 
                 $qrResult = Builder::create()
                     ->writer(new PngWriter())
@@ -618,7 +705,7 @@ class AdminController extends AbstractActionController
                 // Instrucciones
                 $pdf->SetFont('helvetica', '', 6);
                 $pdf->SetXY($x + 2, $y + $qrHeight - 15);
-                $pdf->MultiCell($qrWidth - 4, 3, "Escanee este código QR para registrar o consultar información del vehículo.\n\nwww.didecoarica.cl", 0, 'C');
+                $pdf->MultiCell($qrWidth - 4, 3, "Escanee este código QR para registrar o consultar información del vehículo.\n\nwww.aprotec.cl", 0, 'C');
 
                 // Eliminar archivo temporal
                 @unlink($qrTempFile);

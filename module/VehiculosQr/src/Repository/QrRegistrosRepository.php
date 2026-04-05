@@ -54,4 +54,9 @@ class QrRegistrosRepository
     {
         return (bool) $this->tableGateway->delete(['id' => $id]);
     }
+
+    public function deleteByQrCodigoId(int $qrCodigoId): bool
+    {
+        return (bool) $this->tableGateway->delete(['qr_codigo_id' => $qrCodigoId]);
+    }
 }

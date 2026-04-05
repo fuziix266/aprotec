@@ -212,6 +212,16 @@ return [
                     ],
                 ],
             ],
+            'vehiculos-admin-exportar-qr-existentes' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/vehiculos/admin/exportar-qr-existentes',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'exportar-qr-existentes',
+                    ],
+                ],
+            ],
             'vehiculos-admin-cambiar-estado' => [
                 'type' => Literal::class,
                 'options' => [
@@ -219,6 +229,16 @@ return [
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'cambiar-estado',
+                    ],
+                ],
+            ],
+            'vehiculos-admin-eliminar-qr' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/vehiculos/admin/eliminar-qr',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'eliminar-qr',
                     ],
                 ],
             ],
@@ -243,9 +263,12 @@ return [
                 ],
             ],
             'vehiculos-admin-logs' => [
-                'type' => Literal::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route' => '/vehiculos/admin/logs',
+                    'route' => '/vehiculos/admin/logs[/:id]',
+                    'constraints' => [
+                        'id' => '[a-zA-Z0-9_-]*',
+                    ],
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'logs',

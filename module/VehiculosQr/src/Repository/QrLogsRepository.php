@@ -50,4 +50,53 @@ class QrLogsRepository
         
         return $logs;
     }
+
+    /**
+     * Obtener logs globales
+     */
+    public function findGlobal(int $limit = 200): array
+    {
+        $sql = "SELECT l.*, q.uuid_qr as qr_uuid, u.correo as usuario_correo
+                FROM qr_logs l
+                LEFT JOIN qr_codigos q ON l.qr_codigo_id = q.id
+                LEFT JOIN qr_usuarios u ON l.usuario_id = u.id
+                ORDER BY l.fecha_evento DESC
+                LIMIT ?";
+        
+        $adapter = $this->tableGateway->getAdapter();
+        $statement = $adapter->createStatement($sql, [$limit]);
+        $result = $statement->execute();
+        
+        $logs = [];
+        foreach ($result as $row) {
+            $logs[] = (array) $row;
+        }
+        
+        return $logs;
+    }
+
+    /**
+     * Obtener escaneos sospechosos globales
+     */
+    public function findEscaneosSospechososGlobal(int $limit = 50): array
+    {
+        $sql = "SELECT l.*, q.uuid_qr as qr_uuid, u.correo as usuario_correo
+                FROM qr_logs l
+                LEFT JOIN qr_codigos q ON l.qr_codigo_id = q.id
+                LEFT JOIN qr_usuarios u ON l.usuario_id = u.id
+                WHERE (TIME(l.fecha_evento) < '06:00:00' OR TIME(l.fecha_evento) > '22:00:00')
+                ORDER BY l.fecha_evento DESC
+                LIMIT ?";
+        
+        $adapter = $this->tableGateway->getAdapter();
+        $statement = $adapter->createStatement($sql, [$limit]);
+        $result = $statement->execute();
+        
+        $logs = [];
+        foreach ($result as $row) {
+            $logs[] = (array) $row;
+        }
+        
+        return $logs;
+    }
 }

@@ -400,4 +400,32 @@ class QrService
     {
         return $this->qrCodigosRepo->count();
     }
+
+    /**
+     * Eliminar físicamente un QR de la base de datos (y registros/historial asociados)
+     */
+    public function eliminarQrPermanente(string $uuid): bool
+    {
+        try {
+            $qr = $this->buscarPorUuid($uuid);
+            if (!$qr) {
+                return false;
+            }
+
+            $registro = $this->obtenerRegistroPorQrId($qr['id']);
+            
+            // Si tiene registro asociado, borrar su historial y luego el registro
+            if ($registro) {
+                $this->qrHistorialRepo->deleteByRegistroId($registro['id']);
+            }
+            // Borrar todos los registros apuntando a este QR
+            $this->qrRegistrosRepo->deleteByQrCodigoId($qr['id']);
+            
+            // Finalmente borrar el QR
+            return $this->qrCodigosRepo->delete($qr['id']);
+        } catch (\Exception $e) {
+            error_log("Error al eliminar QR permanentemente: " . $e->getMessage());
+            return false;
+        }
+    }
 }

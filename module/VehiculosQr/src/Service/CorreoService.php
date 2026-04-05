@@ -9,7 +9,7 @@ use Laminas\Mail\Transport\SmtpOptions;
 class CorreoService
 {
     private string $fromEmail = 'noreply@municipalidadarica.cl';
-    private string $fromName = 'Sistema QR Vehículos - DIDECO Arica';
+    private string $fromName = 'Sistema QR Vehículos - APROTEC';
 
     /**
      * Enviar código de confirmación
@@ -36,7 +36,7 @@ class CorreoService
     <div class="container">
         <div class="header">
             <h1>Sistema QR Vehículos Municipales</h1>
-            <p>Municipalidad de Arica - DIDECO</p>
+            <p>Municipalidad de Arica - APROTEC</p>
         </div>
         <div class="content">
             <h2>Código de Confirmación</h2>
@@ -47,8 +47,8 @@ class CorreoService
             <p>Si usted no solicitó este código, ignore este mensaje.</p>
         </div>
         <div class="footer">
-            <p>© 2025 Municipalidad de Arica - DIDECO</p>
-            <p>www.didecoarica.cl/vehiculos</p>
+            <p>© 2025 Municipalidad de Arica - APROTEC</p>
+            <p>www.aprotec.cl/vehiculosqr</p>
         </div>
     </div>
 </body>
