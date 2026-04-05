@@ -458,10 +458,10 @@ class AdminController extends AbstractActionController
         }
 
         // Validar dominio del correo
-        if (!preg_match('/@municipalidadarica\.cl$/i', $correoFuncionario)) {
+        if (!preg_match('/@aprotec\.cl$/i', $correoFuncionario)) {
             return new JsonModel([
                 'success' => false,
-                'error' => 'El correo debe ser del dominio @municipalidadarica.cl'
+                'error' => 'El correo debe ser del dominio @aprotec.cl'
             ]);
         }
 
@@ -609,7 +609,7 @@ class AdminController extends AbstractActionController
             $pdf = new \TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
 
             // Configuración del documento
-            $pdf->SetCreator('Municipalidad de Arica');
+            $pdf->SetCreator('APROTEC');
             $pdf->SetAuthor('Sistema de Identificación Vehicular');
             $pdf->SetTitle('Códigos QR para Vehículos');
             $pdf->SetSubject('Lote de Códigos QR');
@@ -684,7 +684,7 @@ class AdminController extends AbstractActionController
                 // Logo/encabezado
                 $pdf->SetFont('helvetica', 'B', 10);
                 $pdf->SetXY($x + 2, $y + 2);
-                $pdf->Cell($qrWidth - 4, 6, 'MUNICIPALIDAD DE ARICA', 0, 0, 'C');
+                $pdf->Cell($qrWidth - 4, 6, 'APROTEC', 0, 0, 'C');
 
                 // Título
                 $pdf->SetFont('helvetica', 'B', 8);
@@ -761,8 +761,8 @@ class AdminController extends AbstractActionController
                 return new JsonModel(['success' => false, 'message' => 'Correo electrónico inválido']);
             }
 
-            if (!str_ends_with($correo, '@municipalidadarica.cl')) {
-                return new JsonModel(['success' => false, 'message' => 'El correo debe ser @municipalidadarica.cl']);
+            if (!str_ends_with($correo, '@aprotec.cl')) {
+                return new JsonModel(['success' => false, 'message' => 'El correo debe ser @aprotec.cl']);
             }
 
             if (!in_array($rol, ['ADMIN', 'INSPECTOR'])) {
@@ -874,3 +874,4 @@ class AdminController extends AbstractActionController
         }
     }
 }
+

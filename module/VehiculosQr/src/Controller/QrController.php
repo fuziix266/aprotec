@@ -67,10 +67,10 @@ class QrController extends AbstractActionController
         $correo = $this->getRequest()->getPost('correo');
         
         // Validar dominio
-        if (!str_ends_with($correo, '@municipalidadarica.cl')) {
+        if (!str_ends_with($correo, '@aprotec.cl')) {
             return new JsonModel([
                 'success' => false,
-                'error' => 'Solo se permiten correos @municipalidadarica.cl'
+                'error' => 'Solo se permiten correos @aprotec.cl'
             ]);
         }
         
@@ -239,3 +239,4 @@ class QrController extends AbstractActionController
         return $view;
     }
 }
+

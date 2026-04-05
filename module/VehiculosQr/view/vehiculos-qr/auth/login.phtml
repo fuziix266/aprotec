@@ -14,8 +14,8 @@ $redirect = $this->redirect ?? '';
         <!-- Header con gradiente -->
         <div class="login-header">
             <div class="mb-2">
-                <img src="<?= $this->basePath('assets/img/logo-azul.png') ?>"
-                    alt="Logo Municipalidad"
+                <img src="<?= $this->basePath('img/logo-aprotec-banner.png') ?>"
+                    alt="Logo APROTEC"
                     style="height: 44px; filter: brightness(0) invert(1);">
             </div>
             <i class="bi bi-shield-lock-fill login-icon"></i>
@@ -46,7 +46,7 @@ $redirect = $this->redirect ?? '';
                         class="form-control form-control-lg"
                         id="correo"
                         name="correo"
-                        placeholder="usuario@municipalidadarica.cl"
+                        placeholder="usuario@aprotec.cl"
                         required
                         autofocus>
                     <div class="invalid-feedback">
@@ -88,7 +88,7 @@ $redirect = $this->redirect ?? '';
         <div class="login-footer">
             <small class="text-muted">
                 <i class="bi bi-shield-check me-1"></i>
-                Solo funcionarios municipales autorizados
+                Solo personal autorizado
             </small>
         </div>
     </div>
@@ -117,3 +117,4 @@ $redirect = $this->redirect ?? '';
         }
     }
 </script>
+

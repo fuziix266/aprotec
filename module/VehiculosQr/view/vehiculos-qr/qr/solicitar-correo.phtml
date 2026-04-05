@@ -34,7 +34,7 @@ $baseUrl = $this->url('home') . 'vehiculos';
                             Instrucciones
                         </h6>
                         <p class="mb-0">
-                            Ingresa tu correo municipal (@municipalidadarica.cl). 
+                            Ingresa tu correo municipal (@aprotec.cl). 
                             Recibirás un código de confirmación para continuar con el registro.
                         </p>
                     </div>
@@ -49,11 +49,11 @@ $baseUrl = $this->url('home') . 'vehiculos';
                                    class="form-control form-control-lg" 
                                    id="correo" 
                                    name="correo" 
-                                   placeholder="nombre@municipalidadarica.cl"
+                                   placeholder="nombre@aprotec.cl"
                                    required
-                                   pattern=".*@municipalidadarica\.cl$">
+                                   pattern=".*@aprotec\.cl$">
                             <div class="invalid-feedback">
-                                Debe ingresar un correo válido del dominio @municipalidadarica.cl
+                                Debe ingresar un correo válido del dominio @aprotec.cl
                             </div>
                             <div class="form-text">
                                 <i class="bi bi-shield-check me-1"></i>
@@ -116,7 +116,7 @@ document.getElementById('formCorreo').addEventListener('submit', async (e) => {
     if (!APP.Validators.emailMunicipal(correo)) {
         APP.Utils.showAlert(
             'Correo Inválido',
-            'Debes usar un correo del dominio @municipalidadarica.cl',
+            'Debes usar un correo del dominio @aprotec.cl',
             'error'
         );
         return;
@@ -126,3 +126,4 @@ document.getElementById('formCorreo').addEventListener('submit', async (e) => {
     e.target.submit();
 });
 </script>
+

@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Sistema de Identificación Vehicular Municipal mediante Código QR - DIDECO Arica" />
-    <title><?= $this->headTitle('Vehículos Municipales QR - DIDECO Arica')->setSeparator(' — ')->setAutoEscape(false) ?></title>
+    <meta name="description" content="Sistema de Identificación Vehicular Municipal mediante Código QR - APROTEC" />
+    <title><?= $this->headTitle('Vehículos Municipales QR - APROTEC')->setSeparator(' — ')->setAutoEscape(false) ?></title>
 
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,7 +56,7 @@
             background: rgba(13, 71, 161, 0.08);
         }
 
-        /* Línea de colores DIDECO */
+        /* Línea de colores APROTEC */
         .linea-colores {
             height: 5px;
             background: linear-gradient(90deg, #00bb95 25%, #ffca48 25% 50%, #ff6948 50% 75%, #00a7e6 75%);
@@ -150,12 +150,12 @@
 
             <!-- Logo -->
             <a href="<?= $this->url('vehiculos-admin') ?>" class="d-flex align-items-center text-decoration-none">
-                <img src="<?= $this->basePath('assets/img/logo-azul.png') ?>"
-                    alt="Municipalidad de Arica"
+                <img src="<?= $this->basePath('img/logo-aprotec-banner.png') ?>"
+                    alt="Logo APROTEC"
                     style="height:48px;">
                 <div class="ms-3 d-none d-sm-block lh-sm">
                     <div class="fw-bold text-primary" style="font-size:0.95rem;">Vehículos QR</div>
-                    <div class="text-muted" style="font-size:0.75rem;">DIDECO Arica</div>
+                    <div class="text-muted" style="font-size:0.75rem;">APROTEC</div>
                 </div>
             </a>
 
@@ -228,7 +228,7 @@
             </button>
         </div>
 
-        <!-- Línea de colores DIDECO -->
+        <!-- Línea de colores APROTEC -->
         <div class="linea-colores"></div>
 
         <!-- Mobile Menu -->
@@ -327,7 +327,7 @@
                     <div class="mt-3">
                         <span class="badge"
                             style="background:rgba(255,255,255,0.2); font-size:0.78rem; border-radius:8px; padding:0.3rem 0.8rem; backdrop-filter:blur(4px);">
-                            <i class="bi bi-building me-1"></i> DIDECO — Municipalidad de Arica
+                            <i class="bi bi-building me-1"></i> APROTEC
                         </span>
                     </div>
                 </div>
@@ -353,18 +353,18 @@
         <div class="container">
             <div class="row align-items-center gy-3">
                 <div class="col-md-4 text-center text-md-start">
-                    <img src="<?= $this->basePath('assets/img/logo-azul.png') ?>"
-                        alt="Logo Municipalidad"
+                    <img src="<?= $this->basePath('img/logo-aprotec-banner.png') ?>"
+                        alt="Logo APROTEC"
                         style="height:36px; filter:brightness(0) invert(0.6);">
                 </div>
                 <div class="col-md-4 text-center">
-                    <div class="footer-title mb-1">Dirección de Desarrollo Comunitario</div>
+                    <div class="footer-title mb-1">APROTEC</div>
                     <div>Sistema de Identificación Vehicular QR</div>
                 </div>
                 <div class="col-md-4 text-center text-md-end">
                     <div>
                         <i class="bi bi-globe me-1"></i>
-                        <a href="https://www.didecoarica.cl" target="_blank">www.didecoarica.cl</a>
+                        <a href="https://www.aprotec.cl" target="_blank">www.aprotec.cl</a>
                     </div>
                     <div class="mt-1">
                         <i class="bi bi-shield-check me-1"></i> Control y Gestión Digital · <?= date('Y') ?>
@@ -389,3 +389,4 @@
 </body>
 
 </html>
+

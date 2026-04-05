@@ -22,8 +22,8 @@ class AuthService
     public function login(string $correo, string $password): array
     {
         // Validar dominio
-        if (!str_ends_with($correo, '@municipalidadarica.cl')) {
-            return ['success' => false, 'error' => 'Solo se permiten correos @municipalidadarica.cl'];
+        if (!str_ends_with($correo, '@aprotec.cl')) {
+            return ['success' => false, 'error' => 'Solo se permiten correos @aprotec.cl'];
         }
 
         $usuario = $this->usuariosRepo->findByCorreo($correo);
@@ -106,3 +106,4 @@ class AuthService
         return $this->isAuthenticated() && $this->session->rol === 'INSPECTOR';
     }
 }
+

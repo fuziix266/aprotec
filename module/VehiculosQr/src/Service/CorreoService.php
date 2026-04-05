@@ -8,7 +8,7 @@ use Laminas\Mail\Transport\SmtpOptions;
 
 class CorreoService
 {
-    private string $fromEmail = 'noreply@municipalidadarica.cl';
+    private string $fromEmail = 'noreply@aprotec.cl';
     private string $fromName = 'Sistema QR Vehículos - APROTEC';
 
     /**
@@ -36,7 +36,7 @@ class CorreoService
     <div class="container">
         <div class="header">
             <h1>Sistema QR Vehículos Municipales</h1>
-            <p>Municipalidad de Arica - APROTEC</p>
+            <p>APROTEC - APROTEC</p>
         </div>
         <div class="content">
             <h2>Código de Confirmación</h2>
@@ -47,7 +47,7 @@ class CorreoService
             <p>Si usted no solicitó este código, ignore este mensaje.</p>
         </div>
         <div class="footer">
-            <p>© 2025 Municipalidad de Arica - APROTEC</p>
+            <p>© 2025 APROTEC - APROTEC</p>
             <p>www.aprotec.cl/vehiculosqr</p>
         </div>
     </div>
@@ -98,7 +98,7 @@ HTML;
                 'port' => 587,
                 'connection_class' => 'plain',
                 'connection_config' => [
-                    'username' => 'noreply@municipalidadarica.cl',
+                    'username' => 'noreply@aprotec.cl',
                     'password' => 'password',
                     'ssl' => 'tls',
                 ],
@@ -114,3 +114,4 @@ HTML;
         }
     }
 }
+

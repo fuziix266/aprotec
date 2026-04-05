@@ -318,7 +318,7 @@ $baseUrl = $this->url('vehiculos-admin');
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 32px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('MUNICIPALIDAD DE ARICA', canvas.width / 2, 55);
+            ctx.fillText('APROTEC', canvas.width / 2, 55);
 
             // Subtítulo
             ctx.fillStyle = '#000000';
@@ -439,8 +439,8 @@ $baseUrl = $this->url('vehiculos-admin');
                            class="form-control" 
                            id="edit_correo" 
                            value="${registro.correo_funcionario || ''}"
-                           placeholder="correo@municipalidadarica.cl">
-                    <small class="text-muted">Solo correos @municipalidadarica.cl</small>
+                           placeholder="correo@aprotec.cl">
+                    <small class="text-muted">Solo correos @aprotec.cl</small>
                 </div>
                 
                 <div class="row">
@@ -586,8 +586,8 @@ $baseUrl = $this->url('vehiculos-admin');
         }
 
         // Validar dominio del correo
-        if (!correo.endsWith('@municipalidadarica.cl')) {
-            APP.Utils.showAlert('Error', 'El correo debe ser del dominio @municipalidadarica.cl', 'error');
+        if (!correo.endsWith('@aprotec.cl')) {
+            APP.Utils.showAlert('Error', 'El correo debe ser del dominio @aprotec.cl', 'error');
             return;
         }
 
@@ -770,3 +770,4 @@ $baseUrl = $this->url('vehiculos-admin');
 </script>
 
 <!-- DataTables: cargado globalmente desde el layout principal -->
+

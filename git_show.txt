@@ -1,0 +1,70 @@
+commit 34d341d80b6222c9d9e684ada3aad2fc1ad67c49
+Author: fuziix <fuziix@gmail.com>
+Date:   Sat Apr 4 14:15:12 2026 -0300
+
+    Actualización general: Mejoras en registro deportivo (iframe), vista de eventos y nuevos recursos de VehiculosQr
+
+ composer.json                                      |   8 +-
+ composer.lock                                      | 845 +++++++++++++++++--
+ config/application.config.php                      |   1 +
+ config/autoload/global.php                         |  25 +-
+ .../Application/view/layout/layout_vehiculos.phtml | 391 +++++++++
+ module/VehiculosQr/config/module.config.php        | 322 ++++++++
+ .../VehiculosQr/src/Controller/AdminController.php | 789 ++++++++++++++++++
+ .../VehiculosQr/src/Controller/AuthController.php  |  74 ++
+ .../src/Controller/EditarController.php            | 179 ++++
+ module/VehiculosQr/src/Controller/QrController.php | 241 ++++++
+ module/VehiculosQr/src/Module.php                  | 167 ++++
+ .../src/Repository/QrCodigosRepository.php         |  82 ++
+ .../src/Repository/QrHistorialRepository.php       |  33 +
+ .../src/Repository/QrLogsRepository.php            |  53 ++
+ .../src/Repository/QrRegistrosRepository.php       |  57 ++
+ .../src/Repository/QrUsuariosRepository.php        |  51 ++
+ module/VehiculosQr/src/Service/AuthService.php     | 108 +++
+ module/VehiculosQr/src/Service/CorreoService.php   | 116 +++
+ .../VehiculosQr/src/Service/QrHistorialService.php |  47 ++
+ module/VehiculosQr/src/Service/QrLogService.php    |  57 ++
+ module/VehiculosQr/src/Service/QrService.php       | 403 +++++++++
+ .../view/vehiculos-qr/admin/generar-lote.phtml     | 243 ++++++
+ .../view/vehiculos-qr/admin/gestion.phtml          | 736 +++++++++++++++++
+ .../view/vehiculos-qr/admin/index.phtml            |  10 +
+ .../VehiculosQr/view/vehiculos-qr/admin/logs.phtml | 212 +++++
+ .../view/vehiculos-qr/admin/usuarios.phtml         | 306 +++++++
+ .../VehiculosQr/view/vehiculos-qr/auth/login.phtml | 119 +++
+ .../view/vehiculos-qr/editar/confirmar.phtml       | 132 +++
+ .../view/vehiculos-qr/editar/formulario.phtml      | 264 ++++++
+ .../view/vehiculos-qr/editar/index.phtml           | 116 +++
+ .../view/vehiculos-qr/qr/confirmar.phtml           | 159 ++++
+ .../view/vehiculos-qr/qr/consulta-publica.phtml    | 106 +++
+ .../view/vehiculos-qr/qr/formulario.phtml          | 268 ++++++
+ .../VehiculosQr/view/vehiculos-qr/qr/index.phtml   |  75 ++
+ .../view/vehiculos-qr/qr/inspector-ver.phtml       | 205 +++++
+ .../VehiculosQr/view/vehiculos-qr/qr/sin-gps.phtml | 102 +++
+ .../view/vehiculos-qr/qr/solicitar-correo.phtml    | 128 +++
+ module/Web/view/layout/layout.phtml                |  12 +
+ public/assets/css/styles.css                       | 903 +++++++++++++++++++++
+ public/assets/img/README.md                        | 111 +++
+ public/assets/img/escudo-arica-placeholder.svg     |  18 +
+ public/assets/img/hero-vehiculos.jpg               | Bin 0 -> 752633 bytes
+ public/assets/img/logo-azul.png                    | Bin 0 -> 23084 bytes
+ public/assets/js/app.js                            | 380 +++++++++
+ public/assets/temp/qr_lote_20251112_155706.pdf     | Bin 0 -> 44061 bytes
+ public/assets/temp/qr_lote_20251112_160203.pdf     | Bin 0 -> 40669 bytes
+ public/assets/temp/qr_lote_20251114_155709.pdf     | Bin 0 -> 40641 bytes
+ public/assets/vendors/README.md                    |  81 ++
+ .../bootstrap-icons/bootstrap-icons.min.css        |   5 +
+ .../bootstrap-icons/fonts/bootstrap-icons.woff2    | Bin 0 -> 130608 bytes
+ .../assets/vendors/bootstrap/css/bootstrap.min.css |   6 +
+ .../vendors/bootstrap/js/bootstrap.bundle.min.js   |   7 +
+ .../datatables/css/dataTables.bootstrap5.min.css   |   5 +
+ .../datatables/css/responsive.bootstrap5.min.css   |   1 +
+ .../datatables/js/dataTables.bootstrap5.min.js     |   4 +
+ .../datatables/js/dataTables.responsive.min.js     |   4 +
+ public/assets/vendors/datatables/js/es-ES.json     | 244 ++++++
+ .../vendors/datatables/js/jquery.dataTables.min.js |   4 +
+ .../datatables/js/responsive.bootstrap5.min.js     |   4 +
+ public/assets/vendors/jquery/jquery-3.7.1.min.js   |   2 +
+ .../vendors/sweetalert2/sweetalert2.all.min.js     |   6 +
+ .../assets/vendors/sweetalert2/sweetalert2.min.css |   1 +
+ public/css/web.css                                 |   2 +-
+ 63 files changed, 8954 insertions(+), 76 deletions(-)
