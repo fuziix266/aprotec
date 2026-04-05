@@ -24,6 +24,9 @@ WORKDIR /var/www/html
 # Copiar el proyecto completo
 COPY . .
 
+# Usar configuración de BD para Docker (sobreescribe el local.php de XAMPP)
+RUN cp /var/www/html/config/autoload/local.php.docker /var/www/html/config/autoload/local.php
+
 # Instalar Composer y dependencias de producción
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction

@@ -1,0 +1,21 @@
+<?php
+
+// Configuración de BD para entorno Docker/Producción
+// Las variables de entorno son inyectadas por Dokploy
+$dbHost = getenv('DB_HOST') ?: 'aprotec-dbvehiculos-5sjeck';
+$dbPort = getenv('DB_PORT') ?: '3306';
+$dbName = getenv('DB_NAME') ?: 'vehiculos';
+$dbUser = getenv('DB_USER') ?: 'user';
+$dbPass = getenv('DB_PASSWORD') ?: 'admin@123';
+
+return [
+    'db' => [
+        'driver'  => 'Pdo',
+        'dsn'     => "mysql:dbname={$dbName};host={$dbHost};port={$dbPort};charset=utf8",
+        'username' => $dbUser,
+        'password' => $dbPass,
+        'driver_options' => [
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'",
+        ],
+    ],
+];
