@@ -297,7 +297,7 @@ $baseUrl = $this->url('vehiculos-admin');
             const qrImg = new Image();
             qrImg.crossOrigin = 'anonymous';
             // Ruta local: /vehiculos/admin/qr/:uuid (ruta vehiculos-admin-qr)
-            qrImg.src = '/vehiculos/admin/qr/' + uuid;
+            qrImg.src = '/vehiculosqr/admin/qr/' + uuid;
 
             await new Promise((resolve, reject) => {
                 qrImg.onload = resolve;
@@ -389,7 +389,7 @@ $baseUrl = $this->url('vehiculos-admin');
     }
 
     async function descargarQr(uuid) {
-        window.open('/vehiculos/admin/descargar-qr?uuid=' + uuid, '_blank');
+        window.open('/vehiculosqr/admin/descargar-qr?uuid=' + uuid, '_blank');
     }
 
     async function editarDatos(uuid, qrId) {
@@ -410,7 +410,7 @@ $baseUrl = $this->url('vehiculos-admin');
 
         try {
             // Obtener datos del registro
-            const response = await fetch('/vehiculos/admin/obtener-datos?uuid=' + uuid);
+            const response = await fetch('/vehiculosqr/admin/obtener-datos?uuid=' + uuid);
             const data = await response.json();
 
             if (!data.success) {
@@ -606,7 +606,7 @@ $baseUrl = $this->url('vehiculos-admin');
             formData.append('observaciones', document.getElementById('edit_observaciones').value.trim());
 
             const response = await APP.ApiService.postForm(
-                '/vehiculos/admin/guardar-edicion',
+                '/vehiculosqr/admin/guardar-edicion',
                 formData
             );
 
@@ -638,7 +638,7 @@ $baseUrl = $this->url('vehiculos-admin');
                 formData.append('estado', nuevoEstado);
 
                 const response = await APP.ApiService.postForm(
-                    '/vehiculos/admin/cambiar-estado',
+                    '/vehiculosqr/admin/cambiar-estado',
                     formData
                 );
 
@@ -668,7 +668,7 @@ $baseUrl = $this->url('vehiculos-admin');
                 formData.append('uuid', uuid);
 
                 const response = await APP.ApiService.postForm(
-                    '/vehiculos/admin/eliminar-qr',
+                    '/vehiculosqr/admin/eliminar-qr',
                     formData
                 );
 

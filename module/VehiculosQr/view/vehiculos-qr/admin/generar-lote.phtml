@@ -4,7 +4,7 @@
  * Ruta: /vehiculos/admin/generar-lote
  */
 $error = $this->error ?? '';
-$baseUrl = $this->url('home') . 'vehiculos/admin';
+$baseUrl = $this->url('home') . 'vehiculosqr/admin';
 ?>
 
 <div class="container py-5">
@@ -278,7 +278,7 @@ document.getElementById('btnExportarExistentes').addEventListener('click', async
     btnExportar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generando PDF...';
     
     try {
-        const response = await fetch('<?= $this->url("home") ?>vehiculos/admin/exportar-qr-existentes', {
+        const response = await fetch('<?= $this->url("home") ?>vehiculosqr/admin/exportar-qr-existentes', {
             method: 'POST'
         });
         
@@ -311,3 +311,4 @@ document.getElementById('btnExportarExistentes').addEventListener('click', async
     }
 });
 </script>
+
