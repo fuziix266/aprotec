@@ -106,7 +106,12 @@ class Module implements ConfigProviderInterface, BootstrapListenerInterface
                     );
                 },
                 Service\CorreoService::class => function ($container) {
-                    return new Service\CorreoService();
+                    $config = $container->get('config');
+                    $appConfig = $config['app_config'] ?? [];
+                    $smtpConfig = $appConfig['smtp'] ?? [];
+                    // Pasar site_url al servicio para usarlo en los correos
+                    $smtpConfig['site_url'] = $appConfig['site_url'] ?? 'www.aprotec.cl';
+                    return new Service\CorreoService($smtpConfig);
                 },
                 Service\AuthService::class => function ($container) {
                     return new Service\AuthService(

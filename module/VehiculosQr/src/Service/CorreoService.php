@@ -8,8 +8,12 @@ use Laminas\Mail\Transport\SmtpOptions;
 
 class CorreoService
 {
-    private string $fromEmail = 'noreply@aprotec.cl';
-    private string $fromName = 'Sistema QR Vehículos - APROTEC';
+    private array $smtpConfig;
+
+    public function __construct(array $smtpConfig = [])
+    {
+        $this->smtpConfig = $smtpConfig;
+    }
 
     /**
      * Enviar código de confirmación
@@ -17,6 +21,8 @@ class CorreoService
     public function enviarCodigoConfirmacion(string $destinatario, string $codigo): bool
     {
         $asunto = 'Código de Confirmación - Sistema QR Vehículos';
+        $anio = date('Y');
+        $siteUrl = $this->smtpConfig['site_url'] ?? 'www.aprotec.cl';
         
         $mensaje = <<<HTML
 <!DOCTYPE html>
@@ -36,7 +42,7 @@ class CorreoService
     <div class="container">
         <div class="header">
             <h1>Sistema QR Vehículos Municipales</h1>
-            <p>APROTEC - APROTEC</p>
+            <p>APROTEC</p>
         </div>
         <div class="content">
             <h2>Código de Confirmación</h2>
@@ -47,8 +53,8 @@ class CorreoService
             <p>Si usted no solicitó este código, ignore este mensaje.</p>
         </div>
         <div class="footer">
-            <p>© 2025 APROTEC - APROTEC</p>
-            <p>www.aprotec.cl/vehiculosqr</p>
+            <p>&copy; {$anio} APROTEC</p>
+            <p>{$siteUrl}/vehiculosqr</p>
         </div>
     </div>
 </body>
@@ -63,9 +69,12 @@ HTML;
      */
     private function enviarCorreo(string $destinatario, string $asunto, string $cuerpoHtml): bool
     {
+        $fromEmail = $this->smtpConfig['from_email'] ?? 'noreply@aprotec.cl';
+        $fromName = $this->smtpConfig['from_name'] ?? 'Sistema QR Vehículos - APROTEC';
+
         try {
             $message = new Message();
-            $message->setFrom($this->fromEmail, $this->fromName)
+            $message->setFrom($fromEmail, $fromName)
                     ->addTo($destinatario)
                     ->setSubject($asunto);
             
@@ -91,16 +100,27 @@ HTML;
                 return true;
             }
             
-            // Configurar SMTP (actualizar con credenciales reales)
+            // Configurar SMTP desde config inyectada
+            $smtpHost = $this->smtpConfig['host'] ?? '';
+            $smtpPort = (int) ($this->smtpConfig['port'] ?? 587);
+            $smtpUser = $this->smtpConfig['username'] ?? '';
+            $smtpPass = $this->smtpConfig['password'] ?? '';
+            $smtpSsl  = $this->smtpConfig['ssl'] ?? 'tls';
+
+            if (empty($smtpHost) || empty($smtpUser)) {
+                error_log("SMTP no configurado. Correo no enviado a: {$destinatario}");
+                return false;
+            }
+
             $options = new SmtpOptions([
-                'name' => 'localhost',
-                'host' => 'smtp.municipalidadarica.cl',
-                'port' => 587,
+                'name' => $smtpHost,
+                'host' => $smtpHost,
+                'port' => $smtpPort,
                 'connection_class' => 'plain',
                 'connection_config' => [
-                    'username' => 'noreply@aprotec.cl',
-                    'password' => 'password',
-                    'ssl' => 'tls',
+                    'username' => $smtpUser,
+                    'password' => $smtpPass,
+                    'ssl' => $smtpSsl,
                 ],
             ]);
             
@@ -114,4 +134,3 @@ HTML;
         }
     }
 }
-

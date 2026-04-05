@@ -11,18 +11,22 @@ return [
         'base_path' => __DIR__ . '/../../public',
         'temp_path' => __DIR__ . '/../../public/assets/temp',
         'upload_path' => __DIR__ . '/../../public/assets/uploads',
-    ],
-
-    // Configuración de base de datos
-    'db' => [
-        'driver' => 'Pdo',
-        'dsn' => 'mysql:dbname=DBNAMEAQUI;host=localhost;charset=utf8',
-        'username' => 'root',
-        'password' => '',
-        'driver_options' => [
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'',
+        // URL pública del sitio (usada en QR codes y PDFs)
+        'site_url' => getenv('SITE_URL') ?: 'https://www.aprotec.cl',
+        // Configuración SMTP para envío de correos
+        'smtp' => [
+            'host'     => getenv('SMTP_HOST') ?: 'smtp.aprotec.cl',
+            'port'     => (int) (getenv('SMTP_PORT') ?: 587),
+            'username' => getenv('SMTP_USER') ?: 'noreply@aprotec.cl',
+            'password' => getenv('SMTP_PASS') ?: '',
+            'ssl'      => getenv('SMTP_SSL') ?: 'tls',
+            'from_email' => getenv('SMTP_FROM') ?: 'noreply@aprotec.cl',
+            'from_name'  => 'Sistema QR Vehículos - APROTEC',
         ],
     ],
+
+    // NOTA: La configuración 'db' se define en local.php (con variables de entorno)
+    // No se define aquí para evitar conflictos con valores placeholder.
 
     // Service Manager
     'service_manager' => [
@@ -45,7 +49,7 @@ return [
         'use_cookies'     => true,
         'cookie_path'     => '/',
         'use_strict_mode' => false,
-        'save_path'       => '/var/www/html/data/sessions',
+        'save_path'       => getenv('SESSION_PATH') ?: sys_get_temp_dir(),
     ],
     'session_manager' => [
         // Validators deshabilitados: causan problemas en Docker con proxy inverso (Traefik)

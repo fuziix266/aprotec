@@ -1,12 +1,12 @@
 <?php
 
 // Configuración de BD para entorno Docker/Producción
-// Las variables de entorno son inyectadas por Dokploy
-$dbHost = getenv('DB_HOST') ?: 'aprotec-dbvehiculos-5sjeck';
+// Las variables de entorno DEBEN ser inyectadas por Dokploy
+$dbHost = getenv('DB_HOST') ?: 'localhost';
 $dbPort = getenv('DB_PORT') ?: '3306';
 $dbName = getenv('DB_NAME') ?: 'vehiculos';
 $dbUser = getenv('DB_USER') ?: 'root';
-$dbPass = getenv('DB_PASSWORD') ?: 'admin@123';
+$dbPass = getenv('DB_PASSWORD') ?: '';
 
 return [
     'db' => [

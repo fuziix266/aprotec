@@ -291,7 +291,7 @@ class QrService
                 ]);
                 
                 // Registrar en historial
-                $usuario = $_SESSION['usuario_admin'] ?? 'admin';
+                $usuario = 'admin';
                 $this->qrHistorialRepo->create([
                     'qr_registro_id' => $registroId,
                     'quien_correo' => $usuario,
@@ -332,7 +332,7 @@ class QrService
             if ($resultado) {
                 // Registrar en historial
                 $cambios = $this->calcularCambios($datosAnteriores, $datos);
-                $usuario = $_SESSION['usuario_admin'] ?? 'admin';
+                $usuario = 'admin';
                 
                 $this->qrHistorialRepo->create([
                     'qr_registro_id' => $registro['id'],

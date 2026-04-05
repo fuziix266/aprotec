@@ -280,7 +280,7 @@ $baseUrl = $this->url('vehiculos-admin');
 
         try {
             // Generar el diseño del QR (57mm x 93mm = 215px x 351px a 96 DPI)
-            const qrUrl = `https://www.aprotec.cl/vehiculosqr/qr/${uuid}`;
+            const qrUrl = `<?= $this->escapeHtml($this->siteUrl ?? 'https://www.aprotec.cl') ?>/vehiculosqr/qr/${uuid}`;
 
             // Crear canvas oculto para generar la imagen
             const canvas = document.createElement('canvas');
@@ -349,7 +349,7 @@ $baseUrl = $this->url('vehiculos-admin');
 
             // URL
             ctx.font = 'bold 20px Arial';
-            ctx.fillText('www.aprotec.cl', canvas.width / 2, qrY + qrSize + 200);
+            ctx.fillText('<?= str_replace(["https://", "http://"], "", $this->siteUrl ?? "www.aprotec.cl") ?>', canvas.width / 2, qrY + qrSize + 200);
 
             // Convertir canvas a imagen
             const dataUrl = canvas.toDataURL('image/jpeg', 0.95);

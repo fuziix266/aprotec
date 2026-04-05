@@ -81,12 +81,15 @@ class AdminController extends AbstractActionController
             $codigo['registro'] = $this->qrService->obtenerRegistroPorQrId($codigo['id']);
         }
 
+        $siteUrl = rtrim($this->appConfig['site_url'] ?? 'https://www.aprotec.cl', '/');
+
         $view = new ViewModel([
             'codigos' => $codigos,
             'currentPage' => $page,
             'totalPages' => $totalPages,
             'total' => $total,
             'usuario' => $this->authService->getCurrentUser(),
+            'siteUrl' => $siteUrl,
         ]);
 
         return $view;
@@ -248,7 +251,8 @@ class AdminController extends AbstractActionController
         }
 
         try {
-            $url = 'https://www.aprotec.cl/vehiculosqr/qr/' . $uuid;
+            $siteUrl = rtrim($this->appConfig['site_url'] ?? 'https://www.aprotec.cl', '/');
+            $url = $siteUrl . '/vehiculosqr/qr/' . $uuid;
 
             // Generar QR usando Endroid/QrCode
             $qrResult = Builder::create()
@@ -661,7 +665,8 @@ class AdminController extends AbstractActionController
                 $y = $margen + $espacioV + ($fila * ($qrHeight + $espacioV));
 
                 // Generar imagen QR en memoria
-                $url = 'https://www.aprotec.cl/vehiculosqr/qr/' . $codigo['uuid_qr'];
+                $siteUrl = rtrim($this->appConfig['site_url'] ?? 'https://www.aprotec.cl', '/');
+                $url = $siteUrl . '/vehiculosqr/qr/' . $codigo['uuid_qr'];
 
                 $qrResult = Builder::create()
                     ->writer(new PngWriter())
@@ -705,7 +710,8 @@ class AdminController extends AbstractActionController
                 // Instrucciones
                 $pdf->SetFont('helvetica', '', 6);
                 $pdf->SetXY($x + 2, $y + $qrHeight - 15);
-                $pdf->MultiCell($qrWidth - 4, 3, "Escanee este código QR para registrar o consultar información del vehículo.\n\nwww.aprotec.cl", 0, 'C');
+                $siteDomain = str_replace(['https://', 'http://'], '', $this->appConfig['site_url'] ?? 'www.aprotec.cl');
+                $pdf->MultiCell($qrWidth - 4, 3, "Escanee este código QR para registrar o consultar información del vehículo.\n\n{$siteDomain}", 0, 'C');
 
                 // Eliminar archivo temporal
                 @unlink($qrTempFile);
