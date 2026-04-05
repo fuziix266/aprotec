@@ -1,45 +1,114 @@
 <?php
-// Script temporal de diagnóstico - ELIMINAR después de usar
-header('Content-Type: text/plain');
+// Script de diagnóstico directo para el WSOD de /vehiculos/admin
+// ELIMINAR después de usar
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+header('Content-Type: text/plain; charset=utf-8');
 
-$logDir = __DIR__ . '/../data/logs';
+echo "=== DIAGNÓSTICO WSOD /vehiculos/admin ===\n\n";
 
-echo "=== PHP Error Log ===\n";
-$phpLog = $logDir . '/php_errors.log';
-if (file_exists($phpLog)) {
-    $lines = file($phpLog);
-    echo "Total lines: " . count($lines) . "\n";
-    echo implode('', array_slice($lines, -30));
-} else {
-    echo "File not found: $phpLog\n";
+// 1. Verificar archivos del módulo
+echo "1. ARCHIVOS DEL MÓDULO:\n";
+$files = [
+    '/var/www/html/module/Vehiculos/src/Module.php',
+    '/var/www/html/module/Vehiculos/src/Controller/AdminController.php',
+    '/var/www/html/module/Vehiculos/src/Service/AuthService.php',
+    '/var/www/html/module/Vehiculos/src/Repository/QrCodigosRepository.php',
+    '/var/www/html/module/Vehiculos/src/Repository/QrUsuariosRepository.php',
+    '/var/www/html/module/Vehiculos/config/module.config.php',
+    '/var/www/html/config/autoload/local.php',
+];
+foreach ($files as $f) {
+    echo "  " . basename($f) . ": " . (file_exists($f) ? "OK (" . filesize($f) . "b)" : "MISSING!") . "\n";
 }
 
-echo "\n\n=== Fatal Error Log ===\n";
-$fatalLog = $logDir . '/fatal_errors.log';
-if (file_exists($fatalLog)) {
-    echo file_get_contents($fatalLog);
-} else {
-    echo "File not found: $fatalLog\n";
+// 2. Verificar sesiones
+echo "\n2. SESIONES:\n";
+$sessDir = '/var/www/html/data/sessions';
+echo "  save_path config: " . ini_get('session.save_path') . "\n";
+echo "  data/sessions exists: " . (is_dir($sessDir) ? 'YES' : 'NO') . "\n";
+echo "  data/sessions writable: " . (is_dir($sessDir) && is_writable($sessDir) ? 'YES' : 'NO') . "\n";
+echo "  sys_get_temp_dir: " . sys_get_temp_dir() . "\n";
+echo "  tmp writable: " . (is_writable(sys_get_temp_dir()) ? 'YES' : 'NO') . "\n";
+
+// 3. Probar session_start
+echo "\n3. SESSION_START:\n";
+try {
+    session_start();
+    echo "  session_start(): OK (ID: " . session_id() . ")\n";
+    session_destroy();
+} catch (\Throwable $e) {
+    echo "  session_start(): FAILED - " . $e->getMessage() . "\n";
 }
 
-echo "\n\n=== Apache Error Log (last 20 lines) ===\n";
-$apacheLog = '/var/log/apache2/error.log';
-if (file_exists($apacheLog)) {
-    $lines = file($apacheLog);
-    echo implode('', array_slice($lines, -20));
-} else {
-    echo "File not found: $apacheLog\n";
+// 4. Probar conexión a BD
+echo "\n4. BASE DE DATOS:\n";
+try {
+    $config = include '/var/www/html/config/autoload/local.php';
+    $dbConfig = $config['db'] ?? [];
+    echo "  driver: " . ($dbConfig['driver'] ?? 'NOT SET') . "\n";
+    echo "  dsn: " . ($dbConfig['dsn'] ?? 'NOT SET') . "\n";
+    echo "  username: " . ($dbConfig['username'] ?? 'NOT SET') . "\n";
+    
+    $pdo = new PDO($dbConfig['dsn'], $dbConfig['username'], $dbConfig['password'] ?? '');
+    echo "  Connection: OK\n";
+    
+    // Probar tabla
+    $stmt = $pdo->query("SELECT COUNT(*) FROM qr_codigos");
+    echo "  qr_codigos count: " . $stmt->fetchColumn() . "\n";
+    
+    $stmt = $pdo->query("SELECT COUNT(*) FROM qr_usuarios");
+    echo "  qr_usuarios count: " . $stmt->fetchColumn() . "\n";
+} catch (\Throwable $e) {
+    echo "  DB ERROR: " . $e->getMessage() . "\n";
 }
 
-echo "\n\n=== Session Config ===\n";
-echo "save_path: " . ini_get('session.save_path') . "\n";
-echo "save_path writable: " . (is_writable(ini_get('session.save_path') ?: sys_get_temp_dir()) ? 'YES' : 'NO') . "\n";
-echo "data/sessions exists: " . (is_dir($logDir . '/../sessions') ? 'YES' : 'NO') . "\n";
-echo "data/sessions writable: " . (is_writable($logDir . '/../sessions') ? 'YES' : 'NO') . "\n";
-
-echo "\n\n=== Log Dir ===\n";
-echo "Exists: " . (is_dir($logDir) ? 'YES' : 'NO') . "\n";
-echo "Writable: " . (is_writable($logDir) ? 'YES' : 'NO') . "\n";
-if (is_dir($logDir)) {
-    echo "Contents: " . implode(', ', scandir($logDir)) . "\n";
+// 5. Probar autoload y ServiceManager
+echo "\n5. BOOTSTRAP LAMINAS:\n";
+try {
+    chdir('/var/www/html/public');
+    require '/var/www/html/vendor/autoload.php';
+    
+    // Verificar que las clases existen
+    $classes = [
+        'Vehiculos\\Module',
+        'Vehiculos\\Controller\\AdminController',
+        'Vehiculos\\Service\\AuthService',
+        'Vehiculos\\Repository\\QrCodigosRepository',
+        'Vehiculos\\Repository\\QrUsuariosRepository',
+    ];
+    foreach ($classes as $c) {
+        echo "  class $c: " . (class_exists($c) ? 'OK' : 'MISSING') . "\n";
+    }
+    
+    // Intentar crear la aplicación
+    $appConfig = require '/var/www/html/config/application.config.php';
+    echo "  modules: " . implode(', ', $appConfig['modules']) . "\n";
+    
+    $app = \Laminas\Mvc\Application::init($appConfig);
+    echo "  Application::init(): OK\n";
+    
+    $sm = $app->getServiceManager();
+    echo "  ServiceManager: OK\n";
+    
+    // Probar obtener AuthService
+    $authService = $sm->get(\Vehiculos\Service\AuthService::class);
+    echo "  AuthService: OK\n";
+    
+    // Probar obtener AdminController
+    $controllerManager = $sm->get('ControllerManager');
+    $controller = $controllerManager->get(\Vehiculos\Controller\AdminController::class);
+    echo "  AdminController: OK\n";
+    
+} catch (\Throwable $e) {
+    echo "  BOOTSTRAP ERROR: " . $e->getMessage() . "\n";
+    echo "  File: " . $e->getFile() . ":" . $e->getLine() . "\n";
+    echo "  Trace:\n" . $e->getTraceAsString() . "\n";
 }
+
+// 6. Verificar development.config.php
+echo "\n6. DEVELOPMENT CONFIG:\n";
+$devConfig = '/var/www/html/config/development.config.php';
+echo "  development.config.php: " . (file_exists($devConfig) ? "EXISTS (PROBLEM!)" : "Not found (OK)") . "\n";
+
+echo "\n=== FIN DIAGNÓSTICO ===\n";
