@@ -59,7 +59,7 @@ class AuthController extends AbstractActionController
             'error' => $error,
             'redirect' => $redirect,
         ]);
-        $view->setTemplate('vehiculos-qr/auth/login');
+        $view->setTemplate('vehiculos/auth/login');
         return $view;
     }
 

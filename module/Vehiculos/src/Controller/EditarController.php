@@ -32,7 +32,7 @@ class EditarController extends AbstractActionController
     public function indexAction()
     {
         $view = new ViewModel();
-        $view->setTemplate('vehiculos-qr/editar/index');
+        $view->setTemplate('vehiculos/editar/index');
         return $view;
     }
 
@@ -134,7 +134,7 @@ class EditarController extends AbstractActionController
         $registro = $this->qrService->obtenerRegistroPorId($session->registro_id);
 
         $view = new ViewModel(['registro' => $registro]);
-        $view->setTemplate('vehiculos-qr/editar/formulario');
+        $view->setTemplate('vehiculos/editar/formulario');
         return $view;
     }
 

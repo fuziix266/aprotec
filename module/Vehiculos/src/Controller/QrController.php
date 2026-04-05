@@ -50,7 +50,7 @@ class QrController extends AbstractActionController
             'uuid' => $uuid,
         ]);
 
-        $view->setTemplate('vehiculos-qr/qr/index');
+        $view->setTemplate('vehiculos/qr/index');
         return $view;
     }
 
@@ -60,7 +60,7 @@ class QrController extends AbstractActionController
     public function solicitarCorreoAction()
     {
         if (!$this->getRequest()->isPost()) {
-            return $this->redirect()->toRoute('vehiculos-qr', ['uuid' => $this->params()->fromRoute('uuid')]);
+            return $this->redirect()->toRoute('vehiculos', ['uuid' => $this->params()->fromRoute('uuid')]);
         }
 
         $uuid = $this->params()->fromRoute('uuid');
@@ -100,7 +100,7 @@ class QrController extends AbstractActionController
     public function confirmarAction()
     {
         if (!$this->getRequest()->isPost()) {
-            return $this->redirect()->toRoute('vehiculos-qr', ['uuid' => $this->params()->fromRoute('uuid')]);
+            return $this->redirect()->toRoute('vehiculos', ['uuid' => $this->params()->fromRoute('uuid')]);
         }
 
         $uuid = $this->params()->fromRoute('uuid');
@@ -125,11 +125,11 @@ class QrController extends AbstractActionController
         $datos = $this->qrService->obtenerDatosCompletos($uuid);
 
         if (!$datos || !$datos['registro'] || $datos['registro']['correo_confirmado'] != 1) {
-            return $this->redirect()->toRoute('vehiculos-qr', ['uuid' => $uuid]);
+            return $this->redirect()->toRoute('vehiculos', ['uuid' => $uuid]);
         }
 
         $view = new ViewModel($datos);
-        $view->setTemplate('vehiculos-qr/qr/formulario');
+        $view->setTemplate('vehiculos/qr/formulario');
         return $view;
     }
 
@@ -139,7 +139,7 @@ class QrController extends AbstractActionController
     public function guardarDatosAction()
     {
         if (!$this->getRequest()->isPost()) {
-            return $this->redirect()->toRoute('vehiculos-qr', ['uuid' => $this->params()->fromRoute('uuid')]);
+            return $this->redirect()->toRoute('vehiculos', ['uuid' => $this->params()->fromRoute('uuid')]);
         }
 
         $uuid = $this->params()->fromRoute('uuid');
@@ -235,7 +235,7 @@ class QrController extends AbstractActionController
         }
 
         $view = new ViewModel($datos);
-        $view->setTemplate('vehiculos-qr/qr/inspector-ver');
+        $view->setTemplate('vehiculos/qr/inspector-ver');
         return $view;
     }
 }

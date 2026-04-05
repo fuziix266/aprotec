@@ -134,7 +134,7 @@ class AdminController extends AbstractActionController
         $view = new ViewModel([
             'usuario' => $this->authService->getCurrentUser(),
         ]);
-        $view->setTemplate('vehiculos-qr/admin/generar-lote');
+        $view->setTemplate('vehiculos/admin/generar-lote');
         return $view;
     }
 
@@ -375,7 +375,7 @@ class AdminController extends AbstractActionController
             'usuario' => $this->authService->getCurrentUser(),
         ]);
 
-        $view->setTemplate('vehiculos-qr/admin/logs');
+        $view->setTemplate('vehiculos/admin/logs');
         return $view;
     }
 
