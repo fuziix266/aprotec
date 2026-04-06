@@ -53,9 +53,9 @@ if ($error) {
 
                     <?php if ($error): ?>
                         <!-- Caso: QR inválido -->
-                        <div class="card bg-white bg-opacity-20 border-0 shadow-lg mb-4 backdrop-blur rounded-4">
+                        <div class="card bg-white border-0 shadow-lg mb-4 rounded-4">
                             <div class="card-body p-4">
-                                <p class="text-white mb-0">
+                                <p class="text-dark mb-0">
                                     <i class="bi bi-info-circle me-2"></i>
                                     <?= $this->escapeHtml($error) ?>
                                 </p>
@@ -64,13 +64,13 @@ if ($error) {
 
                     <?php elseif ($estado === 'PENDIENTE'): ?>
                         <!-- Caso: QR sin asignar -->
-                        <div class="card bg-white bg-opacity-20 border-0 shadow-lg mb-4 backdrop-blur rounded-4">
+                        <div class="card bg-white border-0 shadow-lg mb-4 rounded-4">
                             <div class="card-body p-4">
-                                <p class="text-white mb-2">
+                                <p class="text-dark mb-2">
                                     <i class="bi bi-info-circle me-2"></i>
                                     Este código QR aún no ha sido asignado a ningún vehículo.
                                 </p>
-                                <p class="text-white opacity-75 mb-0">
+                                <p class="text-secondary mb-0">
                                     <small>Si escaneaste este código en un vehículo municipal, por favor comunícalo a APROTEC.</small>
                                 </p>
                             </div>
@@ -91,24 +91,24 @@ if ($error) {
                         <?php endif; ?>
 
                         <!-- Tarjeta de información -->
-                        <div class="card bg-white bg-opacity-20 border-0 shadow-lg mb-4 backdrop-blur rounded-4">
+                        <div class="card bg-white border-0 shadow-lg mb-4 rounded-4">
                             <div class="card-body p-4">
-                                <h5 class="text-white mb-3">
+                                <h5 class="text-dark mb-3">
                                     <i class="bi bi-info-circle me-2"></i>
                                     Información del Escaneo
                                 </h5>
-                                <div class="row text-white g-3">
+                                <div class="row text-dark g-3">
                                     <div class="col-6">
-                                        <small class="d-block opacity-75">Código QR</small>
+                                        <small class="d-block text-secondary">Código QR</small>
                                         <strong><?= $this->escapeHtml(substr($qr['uuid'], 0, 8)) ?>...</strong>
                                     </div>
                                     <div class="col-6">
-                                        <small class="d-block opacity-75">Estado</small>
+                                        <small class="d-block text-secondary">Estado</small>
                                         <strong><?= $this->escapeHtml($estado) ?></strong>
                                     </div>
                                     <?php if ($lat && $lon): ?>
                                     <div class="col-12">
-                                        <small class="opacity-75">
+                                        <small class="text-secondary">
                                             <i class="bi bi-geo-alt me-1"></i>
                                             Ubicación registrada: <?= $this->escapeHtml(number_format((float)$lat, 6)) ?>, <?= $this->escapeHtml(number_format((float)$lon, 6)) ?>
                                         </small>
