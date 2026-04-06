@@ -598,9 +598,11 @@ class AdminController extends AbstractActionController
     private function generarPdfConQr(array $codigos): string
     {
         try {
-            // Obtener ruta desde configuración
+            // Obtener ruta desde configuración y desde el request dinámicamente
             $tempPath = $this->appConfig['temp_path'] ?? __DIR__ . '/../../../../../public/assets/temp';
-            $baseUrl = $this->appConfig['base_url'] ?? '/';
+            /** @var \Laminas\Http\PhpEnvironment\Request $request */
+            $request = $this->getRequest();
+            $baseUrl = method_exists($request, 'getBasePath') ? $request->getBasePath() : '';
 
             // Asegurar que el directorio existe
             if (!is_dir($tempPath)) {
@@ -732,7 +734,7 @@ class AdminController extends AbstractActionController
                 error_log("Error: El archivo PDF no se generó en: " . $filepath);
             }
 
-            return $baseUrl . 'assets/temp/' . $filename;
+            return rtrim($baseUrl, '/') . '/assets/temp/' . $filename;
         } catch (\Exception $e) {
             error_log("PDF Generator - ERROR: " . $e->getMessage());
             error_log("PDF Generator - Trace: " . $e->getTraceAsString());
