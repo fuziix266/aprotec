@@ -49,7 +49,7 @@ return [
         'use_cookies'     => true,
         'cookie_path'     => '/',
         'use_strict_mode' => false,
-        'save_path'       => getenv('SESSION_PATH') ?: (__DIR__ . '/../../data/sessions'),
+        // 'save_path'       => getenv('SESSION_PATH') ?: (__DIR__ . '/../../data/sessions'),
     ],
     'session_manager' => [
         // Validators deshabilitados: causan problemas en Docker con proxy inverso (Traefik)

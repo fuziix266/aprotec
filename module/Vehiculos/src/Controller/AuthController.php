@@ -38,21 +38,27 @@ class AuthController extends AbstractActionController
             $correo = $this->getRequest()->getPost('correo');
             $password = $this->getRequest()->getPost('password');
 
-            $resultado = $this->authService->login($correo, $password);
+            try {
+                $resultado = $this->authService->login($correo, $password);
 
-            if ($resultado['success']) {
-                // Redirigir según parámetro o según rol
-                if ($redirect) {
-                    return $this->redirect()->toUrl($redirect);
+                if ($resultado['success']) {
+                    // Redirigir según parámetro o según rol
+                    if ($redirect) {
+                        return $this->redirect()->toUrl($redirect);
+                    }
+
+                    if ($resultado['usuario']['rol'] === 'ADMIN') {
+                        return $this->redirect()->toRoute('vehiculos-admin');
+                    }
+                    return $this->redirect()->toRoute('home');
                 }
 
-                if ($resultado['usuario']['rol'] === 'ADMIN') {
-                    return $this->redirect()->toRoute('vehiculos-admin');
-                }
-                return $this->redirect()->toRoute('home');
+                $error = $resultado['error'];
+            } catch (\Throwable $e) {
+                // Catch any exception or error (like session or DB issues) and show it gracefully
+                $error = "Error de Sistema: " . $e->getMessage() . " (" . basename($e->getFile()) . ":" . $e->getLine() . ")";
+                error_log("LoginAuth Falla: " . $e->getMessage() . "\n" . $e->getTraceAsString());
             }
-
-            $error = $resultado['error'];
         }
 
         $view = new ViewModel([
