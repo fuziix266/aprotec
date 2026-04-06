@@ -11,6 +11,7 @@ $registro= $this->registro ?? null;
 $error   = $this->error    ?? null;
 $lat     = $this->lat      ?? null;
 $lon     = $this->lon      ?? null;
+$uuid    = $this->uuid     ?? ($qr['uuid_qr'] ?? ($qr['uuid'] ?? ''));
 
 $estado      = $qr['estado']      ?? 'DESHABILITADO';
 $patente     = $registro['patente'] ?? null;
@@ -100,7 +101,7 @@ if ($error) {
                                 <div class="row text-dark g-3">
                                     <div class="col-6">
                                         <small class="d-block text-secondary">Código QR</small>
-                                        <strong><?= $this->escapeHtml(substr($qr['uuid'], 0, 8)) ?>...</strong>
+                                        <strong><?= $this->escapeHtml(substr($uuid, 0, 8)) ?>...</strong>
                                     </div>
                                     <div class="col-6">
                                         <small class="d-block text-secondary">Estado</small>
