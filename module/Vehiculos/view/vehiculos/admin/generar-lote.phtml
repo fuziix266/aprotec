@@ -279,7 +279,7 @@ $baseUrl = $this->url('home') . 'Vehiculos/admin';
         btnExportar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Generando PDF...';
 
         try {
-            const response = await fetch('<?= $this->url("home") ?>Vehiculos/admin/exportar-qr-existentes', {
+            const response = await fetch('<?= $this->url("vehiculos-admin-exportar-qr-existentes") ?>', {
                 method: 'POST'
             });
 
