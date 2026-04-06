@@ -1,5 +1,0 @@
-id	nombre	correo	password_hash	rol	activo	creado_en	actualizado_en
-1	Administrador Sistema	admin@municipalidadarica.cl	$2y$10$lABYpc1PwvBeMl09mCrPreu6RfpgIz9hQ5cldo9m1ZeXjajJsstci	ADMIN	1	2025-11-11 18:22:56	NULL
-2	Juan Inspector	inspector@municipalidadarica.cl	$2y$10$lABYpc1PwvBeMl09mCrPreu6RfpgIz9hQ5cldo9m1ZeXjajJsstci	INSPECTOR	1	2025-11-11 18:22:56	2025-11-14 20:50:27
-3	pedro pascal	pedro@municipalidadarica.cl	$2y$10$BUgdgCPZotecAr8IxjFJcOdnT7W1TyGioYRZEuOELpKsR/AbxoyvW	INSPECTOR	1	2025-11-17 15:20:51	2025-11-17 19:21:07
-4	Administrador APROTEC	admin@aprotec.cl	$2y$10$B092eBizvO/yTsQv80J9QuWE7efyj1jxrgOacfKKvrGX7GfxWXuqO	ADMIN	1	2026-03-04 19:47:36	NULL

@@ -1,9 +1,0 @@
-Field	Type	Null	Key	Default	Extra
-id	int(10) unsigned	NO	PRI	NULL	auto_increment
-nombre	varchar(255)	NO		NULL	
-correo	varchar(255)	NO	UNI	NULL	
-password_hash	varchar(255)	NO		NULL	
-rol	enum('ADMIN','INSPECTOR')	NO	MUL	INSPECTOR	
-activo	tinyint(1)	NO	MUL	1	
-creado_en	datetime	NO		current_timestamp()	
-actualizado_en	datetime	YES		NULL	
