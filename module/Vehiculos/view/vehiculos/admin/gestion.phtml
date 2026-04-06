@@ -10,6 +10,8 @@ $currentPage = $this->currentPage ?? 1;
 $totalPages = $this->totalPages ?? 1;
 $usuario = $this->usuario ?? null;
 $baseUrl = $this->url('vehiculos-admin');
+$qrAdminBaseUrl = $this->url('vehiculos-admin-qr', ['uuid' => '00000000-0000-0000-0000-000000000000']);
+$qrAdminBaseUrl = substr($qrAdminBaseUrl, 0, strrpos($qrAdminBaseUrl, '/') + 1);
 ?>
 
 
@@ -264,6 +266,8 @@ $baseUrl = $this->url('vehiculos-admin');
 </div>
 
 <script>
+    const ADMIN_BASE_URL = '<?= $this->escapeHtml($baseUrl) ?>';
+    const QR_ADMIN_BASE_URL = '<?= $this->escapeHtml($qrAdminBaseUrl) ?>';
     async function verDetalles(uuid) {
         // Abrir modal
         const modal = new bootstrap.Modal(document.getElementById('modalVerQr'));
@@ -296,8 +300,8 @@ $baseUrl = $this->url('vehiculos-admin');
             // Cargar imagen del QR desde el endpoint local que genera la imagen
             const qrImg = new Image();
             qrImg.crossOrigin = 'anonymous';
-            // Ruta local: /vehiculos/admin/qr/:uuid (ruta vehiculos-admin-qr)
-            qrImg.src = '/vehiculos/admin/qr/' + uuid;
+            // Ruta dinámica usando URL generada por PHP (soporta subdirectorio local y raíz en prod)
+            qrImg.src = QR_ADMIN_BASE_URL + uuid;
 
             await new Promise((resolve, reject) => {
                 qrImg.onload = resolve;
@@ -389,7 +393,7 @@ $baseUrl = $this->url('vehiculos-admin');
     }
 
     async function descargarQr(uuid) {
-        window.open('/vehiculos/admin/descargar-qr?uuid=' + uuid, '_blank');
+        window.open(ADMIN_BASE_URL + '/descargar-qr?uuid=' + uuid, '_blank');
     }
 
     async function editarDatos(uuid, qrId) {
@@ -410,7 +414,7 @@ $baseUrl = $this->url('vehiculos-admin');
 
         try {
             // Obtener datos del registro
-            const response = await fetch('/vehiculos/admin/obtener-datos?uuid=' + uuid);
+            const response = await fetch(ADMIN_BASE_URL + '/obtener-datos?uuid=' + uuid);
             const data = await response.json();
 
             if (!data.success) {
@@ -606,7 +610,7 @@ $baseUrl = $this->url('vehiculos-admin');
             formData.append('observaciones', document.getElementById('edit_observaciones').value.trim());
 
             const response = await APP.ApiService.postForm(
-                '/vehiculos/admin/guardar-edicion',
+                ADMIN_BASE_URL + '/guardar-edicion',
                 formData
             );
 
@@ -638,7 +642,7 @@ $baseUrl = $this->url('vehiculos-admin');
                 formData.append('estado', nuevoEstado);
 
                 const response = await APP.ApiService.postForm(
-                    '/vehiculos/admin/cambiar-estado',
+                    ADMIN_BASE_URL + '/cambiar-estado',
                     formData
                 );
 
@@ -668,7 +672,7 @@ $baseUrl = $this->url('vehiculos-admin');
                 formData.append('uuid', uuid);
 
                 const response = await APP.ApiService.postForm(
-                    '/vehiculos/admin/eliminar-qr',
+                    ADMIN_BASE_URL + '/eliminar-qr',
                     formData
                 );
 
