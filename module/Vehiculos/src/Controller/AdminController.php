@@ -594,147 +594,185 @@ class AdminController extends AbstractActionController
 
     /**
      * Generar PDF con códigos QR (57mm x 93mm en hojas A4)
+     * Diseño institucional Municipalidad de Arica
+     * Colores: Azul Pantone 293C (#004693) + Dorado Pantone 1375C (#FF9E1B)
      */
     private function generarPdfConQr(array $codigos): string
     {
         try {
-            // Obtener ruta desde configuración y desde el request dinámicamente
+            // ── Rutas ──────────────────────────────────────────────────────
             $tempPath = $this->appConfig['temp_path'] ?? __DIR__ . '/../../../../../public/assets/temp';
+            $publicPath = dirname((string) realpath(__DIR__)) . '/../../../../public';
+            $logoPath   = $publicPath . '/assets/img/logo-azul.png';
+
             /** @var \Laminas\Http\PhpEnvironment\Request $request */
             $request = $this->getRequest();
             $baseUrl = method_exists($request, 'getBasePath') ? $request->getBasePath() : '';
+            $siteDomain = str_replace(['https://', 'http://'], '', rtrim($this->appConfig['site_url'] ?? 'www.aprotec.cl', '/'));
+            $siteUrl    = rtrim($this->appConfig['site_url'] ?? 'https://www.aprotec.cl', '/');
 
-            // Asegurar que el directorio existe
             if (!is_dir($tempPath)) {
                 mkdir($tempPath, 0755, true);
             }
 
+            // ── Colores institucionales Municipalidad de Arica ─────────────
+            // Azul Pantone 293C
+            $azulR = 0; $azulG = 70; $azulB = 147;        // #004693
+            // Azul oscuro
+            $azulDarkR = 0; $azulDarkG = 51; $azulDarkB = 112; // #003370
+            // Dorado Pantone 1375C
+            $doradoR = 255; $doradoG = 158; $doradoB = 27; // #FF9E1B
 
-
-            // Crear PDF
+            // ── Crear PDF ──────────────────────────────────────────────────
             $pdf = new \TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-
-            // Configuración del documento
-            $pdf->SetCreator('APROTEC');
-            $pdf->SetAuthor('Sistema de Identificación Vehicular');
-            $pdf->SetTitle('Códigos QR para Vehículos');
-            $pdf->SetSubject('Lote de Códigos QR');
-
-            // Quitar header y footer
+            $pdf->SetCreator('APROTEC - Municipalidad de Arica');
+            $pdf->SetAuthor('Sistema de Identificación Vehicular Municipal');
+            $pdf->SetTitle('Códigos QR - Identificación Vehicular');
+            $pdf->SetSubject('Etiquetas QR - Municipalidad de Arica');
             $pdf->setPrintHeader(false);
             $pdf->setPrintFooter(false);
-
-            // Configurar márgenes mínimos
             $pdf->SetMargins(5, 5, 5);
-            $pdf->SetAutoPageBreak(false);  // Desactivar salto automático
+            $pdf->SetAutoPageBreak(false);
 
-            // Dimensiones de página A4
-            $pageWidth = 210;  // mm
-            $pageHeight = 297; // mm
-            $margen = 5;       // mm
+            // ── Dimensiones ────────────────────────────────────────────────
+            $pageWidth  = 210; // A4 mm
+            $pageHeight = 297;
+            $margen     = 5;
 
-            // Dimensiones del QR (57mm x 93mm)
-            $qrWidth = 57;
+            // Tarjeta: 57mm × 93mm (tamaño estándar ID/etiqueta)
+            $qrWidth  = 57;
             $qrHeight = 93;
 
-            // Configuración de grilla: 3 columnas x 3 filas
-            $columnas = 3;
-            $filas = 3;
-            $qrPorPagina = $columnas * $filas;
+            // Grilla 3×3
+            $columnas     = 3;
+            $filas        = 3;
+            $qrPorPagina  = $columnas * $filas;
 
-            // Calcular espaciado para centrar en página
-            $areaUtilAncho = $pageWidth - (2 * $margen);  // 200mm
-            $areaUtilAlto = $pageHeight - (2 * $margen);  // 287mm
-
+            $areaUtilAncho = $pageWidth  - (2 * $margen);
+            $areaUtilAlto  = $pageHeight - (2 * $margen);
             $espacioH = ($areaUtilAncho - ($columnas * $qrWidth)) / ($columnas + 1);
-            $espacioV = ($areaUtilAlto - ($filas * $qrHeight)) / ($filas + 1);
+            $espacioV = ($areaUtilAlto  - ($filas    * $qrHeight)) / ($filas    + 1);
 
             $contador = 0;
 
             foreach ($codigos as $codigo) {
-                // Nueva página cada 9 QR (3x3)
+
+                // Nueva página cada 9 QR
                 if ($contador % $qrPorPagina === 0) {
                     $pdf->AddPage();
                 }
 
-                // Calcular posición en la grilla
                 $posicion = $contador % $qrPorPagina;
-                $col = $posicion % $columnas;
-                $fila = floor($posicion / $columnas);
+                $col  = $posicion % $columnas;
+                $fila = (int) floor($posicion / $columnas);
 
-                // Calcular coordenadas X, Y con espaciado correcto
-                $x = $margen + $espacioH + ($col * ($qrWidth + $espacioH));
+                $x = $margen + $espacioH + ($col  * ($qrWidth  + $espacioH));
                 $y = $margen + $espacioV + ($fila * ($qrHeight + $espacioV));
 
-                // Generar imagen QR en memoria
-                $siteUrl = rtrim($this->appConfig['site_url'] ?? 'https://www.aprotec.cl', '/');
-                $url = $siteUrl . '/vehiculos/qr/' . $codigo['uuid_qr'];
+                // ── FONDO BLANCO de la tarjeta ─────────────────────────────
+                $pdf->SetFillColor(255, 255, 255);
+                $pdf->SetDrawColor($azulDarkR, $azulDarkG, $azulDarkB);
+                $pdf->SetLineWidth(0.5);
+                $pdf->RoundedRect($x, $y, $qrWidth, $qrHeight, 1.5, '1111', 'DF');
 
+                // ── HEADER: franja blanca con logo institucional ────────────
+                $headerH = 14; // Altura del bloque de logo
+                $pdf->SetFillColor(255, 255, 255);
+                $pdf->Rect($x + 0.5, $y + 0.5, $qrWidth - 1, $headerH, 'F');
+
+                // Logo Municipalidad de Arica (si existe el archivo)
+                if (file_exists($logoPath)) {
+                    $logoW = 40;
+                    $logoH = 10;
+                    $logoX = $x + ($qrWidth - $logoW) / 2;
+                    $logoY = $y + 2;
+                    $pdf->Image($logoPath, $logoX, $logoY, $logoW, $logoH, 'PNG');
+                } else {
+                    // Fallback: texto si no se encuentra el logo
+                    $pdf->SetFont('helvetica', 'B', 7);
+                    $pdf->SetTextColor($azulR, $azulG, $azulB);
+                    $pdf->SetXY($x + 1, $y + 4);
+                    $pdf->Cell($qrWidth - 2, 4, 'MUNICIPALIDAD DE ARICA', 0, 0, 'C');
+                }
+
+                // ── BANDA AZUL: título del sistema ─────────────────────────
+                $bandaY = $y + $headerH;
+                $bandaH = 7;
+                $pdf->SetFillColor($azulR, $azulG, $azulB);
+                $pdf->Rect($x + 0.5, $bandaY, $qrWidth - 1, $bandaH, 'F');
+                $pdf->SetFont('helvetica', 'B', 6);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->SetXY($x + 1, $bandaY + 1);
+                $pdf->Cell($qrWidth - 2, 3, 'IDENTIFICACION VEHICULAR MUNICIPAL', 0, 0, 'C');
+                $pdf->SetFont('helvetica', '', 5);
+                $pdf->SetXY($x + 1, $bandaY + 4);
+                $pdf->Cell($qrWidth - 2, 2, 'APROTEC', 0, 0, 'C');
+
+                // ── CÓDIGO QR ─────────────────────────────────────────────
+                $qrImgSize = 37;
+                $qrImgX    = $x + ($qrWidth - $qrImgSize) / 2;
+                $qrImgY    = $bandaY + $bandaH + 2;
+
+                $url = $siteUrl . '/vehiculos/qr/' . $codigo['uuid_qr'];
                 $qrResult = Builder::create()
                     ->writer(new PngWriter())
                     ->data($url)
                     ->encoding(new Encoding('UTF-8'))
                     ->errorCorrectionLevel(ErrorCorrectionLevel::High)
                     ->size(400)
-                    ->margin(5)
+                    ->margin(4)
                     ->build();
 
-                // Guardar temporalmente la imagen
                 $qrTempFile = $tempPath . DIRECTORY_SEPARATOR . 'temp_qr_' . $codigo['id'] . '.png';
                 $qrResult->saveToFile($qrTempFile);
-
-                // Dibujar borde del diseño
-                $pdf->SetDrawColor(0, 0, 0);
-                $pdf->SetLineWidth(0.3);
-                $pdf->Rect($x, $y, $qrWidth, $qrHeight);
-
-                // Logo/encabezado
-                $pdf->SetFont('helvetica', 'B', 10);
-                $pdf->SetXY($x + 2, $y + 2);
-                $pdf->Cell($qrWidth - 4, 6, 'APROTEC', 0, 0, 'C');
-
-                // Título
-                $pdf->SetFont('helvetica', 'B', 8);
-                $pdf->SetXY($x + 2, $y + 8);
-                $pdf->Cell($qrWidth - 4, 5, 'Identificación Vehicular', 0, 0, 'C');
-
-                // Imagen QR (centrada, tamaño 45x45mm)
-                $qrSize = 45;
-                $qrX = $x + ($qrWidth - $qrSize) / 2;
-                $qrY = $y + 15;
-                $pdf->Image($qrTempFile, $qrX, $qrY, $qrSize, $qrSize, 'PNG');
-
-                // Código abajo del QR
-                $pdf->SetFont('courier', 'B', 9);
-                $pdf->SetXY($x + 2, $y + $qrY + $qrSize + 2);
-                $pdf->Cell($qrWidth - 4, 5, substr($codigo['uuid_qr'], 0, 8), 0, 0, 'C');
-
-                // Instrucciones
-                $pdf->SetFont('helvetica', '', 6);
-                $pdf->SetXY($x + 2, $y + $qrHeight - 15);
-                $siteDomain = str_replace(['https://', 'http://'], '', $this->appConfig['site_url'] ?? 'www.aprotec.cl');
-                $pdf->MultiCell($qrWidth - 4, 3, "Escanee este código QR para registrar o consultar información del vehículo.\n\n{$siteDomain}", 0, 'C');
-
-                // Eliminar archivo temporal
+                $pdf->Image($qrTempFile, $qrImgX, $qrImgY, $qrImgSize, $qrImgSize, 'PNG');
                 @unlink($qrTempFile);
+
+                // ── SEPARADOR DORADO ──────────────────────────────────────
+                $sepY = $qrImgY + $qrImgSize + 2;
+                $pdf->SetDrawColor($doradoR, $doradoG, $doradoB);
+                $pdf->SetLineWidth(0.8);
+                $pdf->Line($x + 3, $sepY, $x + $qrWidth - 3, $sepY);
+
+                // ── ID CORTO del QR ────────────────────────────────────────
+                $pdf->SetFont('courier', 'B', 8);
+                $pdf->SetTextColor($azulR, $azulG, $azulB);
+                $pdf->SetXY($x + 1, $sepY + 1.5);
+                $pdf->Cell($qrWidth - 2, 4, strtoupper(substr($codigo['uuid_qr'], 0, 8)), 0, 0, 'C');
+
+                // ── FOOTER DORADO ─────────────────────────────────────────
+                $footerY = $y + $qrHeight - 9;
+                $pdf->SetFillColor($doradoR, $doradoG, $doradoB);
+                $pdf->Rect($x + 0.5, $footerY, $qrWidth - 1, 8.5, 'F');
+
+                $pdf->SetFont('helvetica', 'B', 5.5);
+                $pdf->SetTextColor($azulDarkR, $azulDarkG, $azulDarkB);
+                $pdf->SetXY($x + 1, $footerY + 1);
+                $pdf->Cell($qrWidth - 2, 3, 'Escanee para verificar el vehiculo', 0, 0, 'C');
+
+                $pdf->SetFont('helvetica', 'B', 6);
+                $pdf->SetXY($x + 1, $footerY + 4.5);
+                $pdf->Cell($qrWidth - 2, 3, $siteDomain, 0, 0, 'C');
+
+                // ── Redibujar borde exterior encima de todo ────────────────
+                $pdf->SetDrawColor($azulDarkR, $azulDarkG, $azulDarkB);
+                $pdf->SetLineWidth(0.5);
+                $pdf->RoundedRect($x, $y, $qrWidth, $qrHeight, 1.5, '1111', 'D');
 
                 $contador++;
             }
 
-            // Guardar PDF
+            // ── Guardar PDF ───────────────────────────────────────────────
             $filename = 'qr_lote_' . date('Ymd_His') . '.pdf';
             $filepath = $tempPath . DIRECTORY_SEPARATOR . $filename;
-
-
-
             $pdf->Output($filepath, 'F');
 
-            if (file_exists($filepath)) {
-            } else {
+            if (!file_exists($filepath)) {
                 error_log("Error: El archivo PDF no se generó en: " . $filepath);
             }
 
             return rtrim($baseUrl, '/') . '/assets/temp/' . $filename;
+
         } catch (\Exception $e) {
             error_log("PDF Generator - ERROR: " . $e->getMessage());
             error_log("PDF Generator - Trace: " . $e->getTraceAsString());
