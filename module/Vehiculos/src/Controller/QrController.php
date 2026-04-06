@@ -66,13 +66,7 @@ class QrController extends AbstractActionController
         $uuid = $this->params()->fromRoute('uuid');
         $correo = $this->getRequest()->getPost('correo');
 
-        // Validar dominio
-        if (!str_ends_with($correo, '@aprotec.cl')) {
-            return new JsonModel([
-                'success' => false,
-                'error' => 'Solo se permiten correos @aprotec.cl'
-            ]);
-        }
+        // Sin restricción de dominio para registro de vehículos públicos
 
         $qr = $this->qrService->buscarPorUuid($uuid);
         if (!$qr) {
