@@ -166,42 +166,79 @@ class QrController extends AbstractActionController
     }
 
     /**
-     * Consulta pública (con GPS, muestra solo patente)
+     * Consulta pública al escanear el QR.
+     * Acepta GET (al abrir URL directamente) y POST (via JS).
+     * - Si el usuario es inspector logueado → redirige a inspector-ver.
+     * - Si es usuario público → muestra vista pública con estado del vehículo.
+     * - GPS puede venir en query string (GET) o en body (POST).
      */
     public function consultarAction()
     {
-        if (!$this->getRequest()->isPost()) {
-            return new JsonModel(['success' => false, 'error' => 'Método no permitido']);
-        }
-
         $uuid = $this->params()->fromRoute('uuid');
-        $gps = $this->getRequest()->getPost('gps');
 
-        // Validar GPS
-        if (!isset($gps['lat']) || !isset($gps['lon'])) {
-            return new JsonModel(['success' => false, 'error' => 'GPS requerido', 'requiere_gps' => true]);
+        // ── 1. Verificar si hay sesión de inspector ─────────────────────────
+        $container = new \Laminas\Session\Container('vehiculos_qr_auth');
+        if (isset($container->user_id)) {
+            // Inspector logueado: registrar log y redirigir a vista completa
+            $qrInspector = $this->qrService->buscarPorUuid($uuid);
+            if ($qrInspector) {
+                // Obtener GPS (GET o POST)
+                $lat = $this->params()->fromQuery('lat') ?? $this->getRequest()->getPost('lat');
+                $lon = $this->params()->fromQuery('lon') ?? $this->getRequest()->getPost('lon');
+                $accuracy = $this->params()->fromQuery('accuracy') ?? $this->getRequest()->getPost('accuracy');
+
+                if ($lat && $lon) {
+                    $this->logService->registrarEvento(
+                        $qrInspector['id'],
+                        'CONSULTA_INSPECTOR',
+                        ['lat' => $lat, 'lon' => $lon, 'accuracy' => $accuracy],
+                        $container->user_id
+                    );
+                }
+            }
+            return $this->redirect()->toRoute('vehiculos-inspector-qr', ['uuid' => $uuid]);
         }
 
+        // ── 2. Usuario público ───────────────────────────────────────────────
+
+        // Obtener GPS de query string (GET) o body (POST)
+        $lat = $this->params()->fromQuery('lat') ?? $this->getRequest()->getPost('lat');
+        $lon = $this->params()->fromQuery('lon') ?? $this->getRequest()->getPost('lon');
+        $accuracy = $this->params()->fromQuery('accuracy') ?? $this->getRequest()->getPost('accuracy');
+
+        // ── 3. GPS ausente: mostrar vista informativa ────────────────────────
+        if (!$lat || !$lon) {
+            $view = new ViewModel(['uuid' => $uuid]);
+            $view->setTemplate('vehiculos/qr/sin-gps');
+            return $view;
+        }
+
+        // ── 4. Buscar QR en BD ────────────────────────────────────────────────
         $qr = $this->qrService->buscarPorUuid($uuid);
         if (!$qr) {
-            return new JsonModel(['success' => false, 'error' => 'QR no encontrado']);
+            $view = new ViewModel(['uuid' => $uuid, 'error' => 'Código QR no encontrado o inválido.']);
+            $view->setTemplate('vehiculos/qr/consulta-publica');
+            return $view;
         }
 
         $registro = $this->qrService->obtenerRegistroPorQrId($qr['id']);
 
-        // Registrar log con GPS
-        $this->logService->registrarEvento($qr['id'], 'CONSULTA_PUBLICA', [
-            'lat' => $gps['lat'],
-            'lon' => $gps['lon'],
-            'accuracy' => $gps['accuracy'] ?? null
-        ]);
+        // ── 5. Registrar escaneo con GPS ──────────────────────────────────────
+        $this->logService->registrarEvento(
+            $qr['id'],
+            'CONSULTA_PUBLICA',
+            ['lat' => $lat, 'lon' => $lon, 'accuracy' => $accuracy]
+        );
 
-        return new JsonModel([
-            'success' => true,
-            'estado' => $qr['estado'],
-            'patente' => $registro['patente'] ?? 'Sin patente',
-            'habilitado' => $qr['estado'] === 'ASIGNADO'
+        // ── 6. Mostrar vista pública con formato ──────────────────────────────
+        $view = new ViewModel([
+            'qr'       => $qr,
+            'registro' => $registro,
+            'lat'      => $lat,
+            'lon'      => $lon,
         ]);
+        $view->setTemplate('vehiculos/qr/consulta-publica');
+        return $view;
     }
 
     /**

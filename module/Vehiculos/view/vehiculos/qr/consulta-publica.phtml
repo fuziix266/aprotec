@@ -1,80 +1,138 @@
 <?php
 /**
- * Vista: Consulta pública de QR
- * Ruta: /qr/:uuid/consultar (con GPS)
- * Muestra solo la patente con fondo de color según estado
+ * Vista: Consulta pública de QR (usuario sin sesión)
+ * Ruta: /qr/:uuid/consultar?lat=&lon=
+ * Casos:
+ *   - $error  → QR inválido/no encontrado
+ *   - $qr     → Mostrar estado con patente
  */
-$qr = $this->qr ?? null;
-$registro = $this->registro ?? null;
-$estado = $qr['estado'] ?? 'DESHABILITADO';
-$patente = $registro['patente'] ?? 'SIN REGISTRO';
+$qr      = $this->qr      ?? null;
+$registro= $this->registro ?? null;
+$error   = $this->error    ?? null;
+$lat     = $this->lat      ?? null;
+$lon     = $this->lon      ?? null;
 
-// Determinar clase de color
-$claseEstado = $estado === 'HABILITADO' ? 'qr-habilitado' : 'qr-deshabilitado';
-$textoEstado = $estado === 'HABILITADO' ? 'Vehículo Habilitado' : 'Vehículo Deshabilitado';
-$iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+$estado      = $qr['estado']      ?? 'DESHABILITADO';
+$patente     = $registro['patente'] ?? null;
+
+// Asignar clases según estado
+if ($error) {
+    $claseEstado  = 'qr-error';
+    $textoEstado  = 'QR No Válido';
+    $iconoEstado  = 'bi-exclamation-triangle-fill';
+} elseif ($estado === 'HABILITADO') {
+    $claseEstado  = 'qr-habilitado';
+    $textoEstado  = 'Vehículo Habilitado';
+    $iconoEstado  = 'bi-check-circle-fill';
+} elseif ($estado === 'PENDIENTE') {
+    $claseEstado  = 'qr-pendiente';
+    $textoEstado  = 'QR Sin Asignar';
+    $iconoEstado  = 'bi-hourglass-split';
+} else {
+    $claseEstado  = 'qr-deshabilitado';
+    $textoEstado  = 'Vehículo Deshabilitado';
+    $iconoEstado  = 'bi-x-circle-fill';
+}
 ?>
 
-<div class="<?= $claseEstado ?> min-vh-100 d-flex align-items-center justify-content-center">
+<div class="qr-consulta-wrapper <?= $claseEstado ?> min-vh-100 d-flex align-items-center justify-content-center">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="text-center text-white">
-                    <!-- Ícono de estado -->
+
+                    <!-- Ícono principal -->
                     <div class="mb-4 animate-fade-in">
-                        <i class="bi <?= $iconoEstado ?>" style="font-size: 8rem; text-shadow: 0 4px 8px rgba(0,0,0,0.3);"></i>
+                        <i class="bi <?= $iconoEstado ?>" style="font-size: 8rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));"></i>
                     </div>
-                    
+
                     <!-- Estado del vehículo -->
-                    <h1 class="display-4 fw-bold mb-4" style="text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                    <h1 class="display-5 fw-bold mb-3" style="text-shadow: 0 2px 6px rgba(0,0,0,0.4);">
                         <?= $this->escapeHtml($textoEstado) ?>
                     </h1>
-                    
-                    <!-- Patente destacada -->
-                    <div class="patente-display mb-4">
-                        <?= $this->escapeHtml($patente) ?>
-                    </div>
-                    
-                    <!-- Información adicional -->
-                    <div class="card bg-white bg-opacity-25 border-0 shadow-lg backdrop-blur">
-                        <div class="card-body p-4">
-                            <h5 class="card-title text-white mb-3">
-                                <i class="bi bi-info-circle me-2"></i>
-                                Información del Sistema
-                            </h5>
-                            
-                            <div class="row text-white">
-                                <div class="col-6 mb-2">
-                                    <small class="d-block opacity-75">Código QR</small>
-                                    <strong><?= $this->escapeHtml(substr($qr['uuid'], 0, 8)) ?>...</strong>
-                                </div>
-                                <div class="col-6 mb-2">
-                                    <small class="d-block opacity-75">Estado</small>
-                                    <strong><?= $this->escapeHtml($estado) ?></strong>
-                                </div>
-                                <div class="col-12">
-                                    <small class="opacity-75">
-                                        <i class="bi bi-geo-alt me-1"></i>
-                                        Ubicación registrada correctamente
-                                    </small>
+
+                    <?php if ($error): ?>
+                        <!-- Caso: QR inválido -->
+                        <div class="card bg-white bg-opacity-20 border-0 shadow-lg mb-4 backdrop-blur rounded-4">
+                            <div class="card-body p-4">
+                                <p class="text-white mb-0">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <?= $this->escapeHtml($error) ?>
+                                </p>
+                            </div>
+                        </div>
+
+                    <?php elseif ($estado === 'PENDIENTE'): ?>
+                        <!-- Caso: QR sin asignar -->
+                        <div class="card bg-white bg-opacity-20 border-0 shadow-lg mb-4 backdrop-blur rounded-4">
+                            <div class="card-body p-4">
+                                <p class="text-white mb-2">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Este código QR aún no ha sido asignado a ningún vehículo.
+                                </p>
+                                <p class="text-white opacity-75 mb-0">
+                                    <small>Si escaneaste este código en un vehículo municipal, por favor comunícalo a APROTEC.</small>
+                                </p>
+                            </div>
+                        </div>
+
+                    <?php else: ?>
+                        <!-- Caso: QR encontrado con estado -->
+
+                        <?php if ($patente): ?>
+                            <!-- Patente destacada -->
+                            <div class="patente-display mb-4">
+                                <?= $this->escapeHtml($patente) ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="text-white opacity-75 mb-4">
+                                <i class="bi bi-dash-circle me-2"></i>Sin patente registrada
+                            </p>
+                        <?php endif; ?>
+
+                        <!-- Tarjeta de información -->
+                        <div class="card bg-white bg-opacity-20 border-0 shadow-lg mb-4 backdrop-blur rounded-4">
+                            <div class="card-body p-4">
+                                <h5 class="text-white mb-3">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Información del Escaneo
+                                </h5>
+                                <div class="row text-white g-3">
+                                    <div class="col-6">
+                                        <small class="d-block opacity-75">Código QR</small>
+                                        <strong><?= $this->escapeHtml(substr($qr['uuid'], 0, 8)) ?>...</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="d-block opacity-75">Estado</small>
+                                        <strong><?= $this->escapeHtml($estado) ?></strong>
+                                    </div>
+                                    <?php if ($lat && $lon): ?>
+                                    <div class="col-12">
+                                        <small class="opacity-75">
+                                            <i class="bi bi-geo-alt me-1"></i>
+                                            Ubicación registrada: <?= $this->escapeHtml(number_format((float)$lat, 6)) ?>, <?= $this->escapeHtml(number_format((float)$lon, 6)) ?>
+                                        </small>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Footer informativo -->
-                    <div class="mt-5 pt-3">
-                        <p class="text-white opacity-75 mb-2">
+                    <?php endif; ?>
+
+                    <!-- Footer -->
+                    <div class="mt-3">
+                        <p class="text-white opacity-75 mb-1">
                             <i class="bi bi-building me-2"></i>
                             Sistema de Identificación Vehicular Municipal
                         </p>
-                        <p class="text-white opacity-75 mb-0">
+                        <p class="text-white opacity-60 mb-0">
                             <small>
                                 <i class="bi bi-clock me-1"></i>
-                                Consulta realizada: <?= date('d/m/Y H:i:s') ?>
+                                <?= date('d/m/Y H:i:s') ?>
                             </small>
                         </p>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -82,25 +140,48 @@ $iconoEstado = $estado === 'HABILITADO' ? 'bi-check-circle-fill' : 'bi-x-circle-
 </div>
 
 <style>
-/* Animación de entrada */
+/* ── Fondos según estado ─────────────────────────────────────── */
+.qr-habilitado {
+    background: linear-gradient(135deg, #1a7a4a 0%, #0d5c36 50%, #093d25 100%);
+}
+.qr-deshabilitado {
+    background: linear-gradient(135deg, #c0392b 0%, #96281b 50%, #6b1f14 100%);
+}
+.qr-pendiente {
+    background: linear-gradient(135deg, #d68910 0%, #a0690a 50%, #6f4806 100%);
+}
+.qr-error {
+    background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+}
+
+/* ── Patente ─────────────────────────────────────────────────── */
+.patente-display {
+    font-family: 'Courier New', monospace;
+    font-size: clamp(2.5rem, 10vw, 5rem);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.15);
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    padding: 0.5em 1em;
+    display: inline-block;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* ── Animación ───────────────────────────────────────────────── */
 .animate-fade-in {
-    animation: fadeIn 0.5s ease-in;
+    animation: fadeInUp 0.5s ease-out both;
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.9); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);   }
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* Efecto backdrop blur */
+/* ── Glassmorphism ───────────────────────────────────────────── */
 .backdrop-blur {
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 </style>
