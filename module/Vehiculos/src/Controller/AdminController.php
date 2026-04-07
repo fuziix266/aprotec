@@ -740,10 +740,10 @@ class AdminController extends AbstractActionController
                 $pdf->SetXY($x + 1, $sepY + 1.5);
                 $pdf->Cell($qrWidth - 2, 4, strtoupper(substr($codigo['uuid_qr'], 0, 8)), 0, 0, 'C');
 
-                $pdf->SetFont('helvetica', 'I', 5.5);
+                $pdf->SetFont('helvetica', 'I', 7.5);
                 $pdf->SetTextColor($azulDarkR, $azulDarkG, $azulDarkB);
                 $pdf->SetXY($x + 1, $sepY + 5.5);
-                $pdf->Cell($qrWidth - 2, 3, 'Funcionario municipal a su servicio.', 0, 0, 'C');
+                $pdf->Cell($qrWidth - 2, 3, 'Funcionario/a municipal a su servicio.', 0, 0, 'C');
 
                 // ── FOOTER DORADO ─────────────────────────────────────────
                 $footerY = $y + $qrHeight - 9;
