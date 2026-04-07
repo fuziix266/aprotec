@@ -603,7 +603,7 @@ class AdminController extends AbstractActionController
             // ── Rutas ──────────────────────────────────────────────────────
             $tempPath = $this->appConfig['temp_path'] ?? __DIR__ . '/../../../../../public/assets/temp';
             $publicPath = dirname((string) realpath(__DIR__)) . '/../../../../public';
-            $logoPath   = $publicPath . '/assets/img/logo-azul.png';
+            $logoPath   = $publicPath . '/assets/img/logo_muni.png';
 
             /** @var \Laminas\Http\PhpEnvironment\Request $request */
             $request = $this->getRequest();
@@ -703,7 +703,7 @@ class AdminController extends AbstractActionController
                 $pdf->SetFont('helvetica', 'B', 6);
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->SetXY($x + 1, $bandaY + 1);
-                $pdf->Cell($qrWidth - 2, 3, 'IDENTIFICACION VEHICULAR MUNICIPAL', 0, 0, 'C');
+                $pdf->Cell($qrWidth - 2, 3, 'IDENTIFICACION VEHICULAR', 0, 0, 'C');
                 $pdf->SetFont('helvetica', '', 5);
                 $pdf->SetXY($x + 1, $bandaY + 4);
                 $pdf->Cell($qrWidth - 2, 2, 'APROTEC', 0, 0, 'C');
@@ -739,6 +739,11 @@ class AdminController extends AbstractActionController
                 $pdf->SetTextColor($azulR, $azulG, $azulB);
                 $pdf->SetXY($x + 1, $sepY + 1.5);
                 $pdf->Cell($qrWidth - 2, 4, strtoupper(substr($codigo['uuid_qr'], 0, 8)), 0, 0, 'C');
+
+                $pdf->SetFont('helvetica', 'I', 5.5);
+                $pdf->SetTextColor($azulDarkR, $azulDarkG, $azulDarkB);
+                $pdf->SetXY($x + 1, $sepY + 5.5);
+                $pdf->Cell($qrWidth - 2, 3, 'Funcionario municipal a su servicio.', 0, 0, 'C');
 
                 // ── FOOTER DORADO ─────────────────────────────────────────
                 $footerY = $y + $qrHeight - 9;
