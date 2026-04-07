@@ -602,7 +602,8 @@ class AdminController extends AbstractActionController
         try {
             // ── Rutas ──────────────────────────────────────────────────────
             $tempPath = $this->appConfig['temp_path'] ?? __DIR__ . '/../../../../../public/assets/temp';
-            $publicPath = dirname((string) realpath(__DIR__)) . '/../../../../public';
+            // __DIR__ es .../Vehiculos/src/Controller. Para llegar a public son 4 niveles
+            $publicPath = __DIR__ . '/../../../../public';
             $logoPath   = $publicPath . '/assets/img/logo_muni.png';
 
             /** @var \Laminas\Http\PhpEnvironment\Request $request */
@@ -618,7 +619,7 @@ class AdminController extends AbstractActionController
             // ── Colores institucionales Municipalidad de Arica ─────────────
             // Azul Pantone 293C
             $azulR = 0; $azulG = 70; $azulB = 147;        // #004693
-            // Azul oscuro
+            // Azul oscuro bordes/textos
             $azulDarkR = 0; $azulDarkG = 51; $azulDarkB = 112; // #003370
             // Dorado Pantone 1375C
             $doradoR = 255; $doradoG = 158; $doradoB = 27; // #FF9E1B
@@ -672,15 +673,19 @@ class AdminController extends AbstractActionController
                 // ── FONDO BLANCO de la tarjeta ─────────────────────────────
                 $pdf->SetFillColor(255, 255, 255);
                 $pdf->SetDrawColor($azulDarkR, $azulDarkG, $azulDarkB);
-                $pdf->SetLineWidth(0.5);
-                $pdf->RoundedRect($x, $y, $qrWidth, $qrHeight, 1.5, '1111', 'DF');
+                // Grosor del borde 1mm para que destaque al imprimir
+                $pdf->SetLineWidth(1);
+                $pdf->Rect($x, $y, $qrWidth, $qrHeight, 'DF'); // Rect (no Rounded)
+
+                // Grosor de linea a normal para el resto
+                $pdf->SetLineWidth(0.2);
 
                 // ── HEADER: franja blanca con logo institucional ────────────
-                $headerH = 14; // Altura del bloque de logo
+                $headerH = 14; 
                 $pdf->SetFillColor(255, 255, 255);
                 $pdf->Rect($x + 0.5, $y + 0.5, $qrWidth - 1, $headerH, 'F');
 
-                // Logo Municipalidad de Arica (si existe el archivo)
+                // Logo Municipalidad de Arica
                 if (file_exists($logoPath)) {
                     $logoW = 40;
                     $logoH = 10;
@@ -688,8 +693,8 @@ class AdminController extends AbstractActionController
                     $logoY = $y + 2;
                     $pdf->Image($logoPath, $logoX, $logoY, $logoW, $logoH, 'PNG');
                 } else {
-                    // Fallback: texto si no se encuentra el logo
-                    $pdf->SetFont('helvetica', 'B', 7);
+                    // Fallback texto en caso extremo
+                    $pdf->SetFont('helvetica', 'B', 8);
                     $pdf->SetTextColor($azulR, $azulG, $azulB);
                     $pdf->SetXY($x + 1, $y + 4);
                     $pdf->Cell($qrWidth - 2, 4, 'MUNICIPALIDAD DE ARICA', 0, 0, 'C');
@@ -700,54 +705,60 @@ class AdminController extends AbstractActionController
                 $bandaH = 7;
                 $pdf->SetFillColor($azulR, $azulG, $azulB);
                 $pdf->Rect($x + 0.5, $bandaY, $qrWidth - 1, $bandaH, 'F');
-                $pdf->SetFont('helvetica', 'B', 6);
+                $pdf->SetFont('helvetica', 'B', 7); // Aumentado
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->SetXY($x + 1, $bandaY + 1);
-                $pdf->Cell($qrWidth - 2, 3, 'IDENTIFICACION VEHICULAR', 0, 0, 'C');
-                $pdf->SetFont('helvetica', '', 5);
+                $pdf->Cell($qrWidth - 2, 3, 'IDENTIFICACIÓN VEHICULAR', 0, 0, 'C');
+                $pdf->SetFont('helvetica', '', 6); // Aumentado
                 $pdf->SetXY($x + 1, $bandaY + 4);
                 $pdf->Cell($qrWidth - 2, 2, 'APROTEC', 0, 0, 'C');
 
                 // ── CÓDIGO QR ─────────────────────────────────────────────
                 $qrImgSize = 37;
                 $qrImgX    = $x + ($qrWidth - $qrImgSize) / 2;
-                $qrImgY    = $bandaY + $bandaH + 2;
+                $qrImgY    = $bandaY + $bandaH + 3; // +3 de margen
 
                 $url = $siteUrl . '/vehiculos/qr/' . $codigo['uuid_qr'];
                 $qrResult = Builder::create()
                     ->writer(new PngWriter())
                     ->data($url)
                     ->encoding(new Encoding('UTF-8'))
-                    ->errorCorrectionLevel(ErrorCorrectionLevel::High)
-                    ->size(400)
-                    ->margin(4)
+                    ->size(500) // Tamaño render interno
+                    ->margin(10)
                     ->build();
 
-                $qrTempFile = $tempPath . DIRECTORY_SEPARATOR . 'temp_qr_' . $codigo['id'] . '.png';
-                $qrResult->saveToFile($qrTempFile);
-                $pdf->Image($qrTempFile, $qrImgX, $qrImgY, $qrImgSize, $qrImgSize, 'PNG');
-                @unlink($qrTempFile);
+                $qrPathData = '@' . $qrResult->getString();
+                
+                // Borde suave del QR
+                $pdf->SetDrawColor(221, 221, 221); // #dddddd
+                $pdf->SetLineWidth(0.3);
+                $pdf->Rect($qrImgX - 0.5, $qrImgY - 0.5, $qrImgSize + 1, $qrImgSize + 1, 'D');
+
+                // Imprimir imagen QR
+                $pdf->Image($qrPathData, $qrImgX, $qrImgY, $qrImgSize, $qrImgSize, 'PNG');
 
                 // ── SEPARADOR DORADO ──────────────────────────────────────
-                $sepY = $qrImgY + $qrImgSize + 2;
+                $sepY = $qrImgY + $qrImgSize + 3; // +3 margen inferior
                 $pdf->SetDrawColor($doradoR, $doradoG, $doradoB);
                 $pdf->SetLineWidth(0.8);
                 $pdf->Line($x + 3, $sepY, $x + $qrWidth - 3, $sepY);
 
                 // ── ID CORTO del QR ────────────────────────────────────────
-                $pdf->SetFont('courier', 'B', 8);
+                $pdf->SetFont('courier', 'B', 10); // Aumentado (antes 8)
                 $pdf->SetTextColor($azulR, $azulG, $azulB);
                 $pdf->SetXY($x + 1, $sepY + 1.5);
-                $pdf->Cell($qrWidth - 2, 4, strtoupper(substr($codigo['uuid_qr'], 0, 8)), 0, 0, 'C');
+                $pdf->Cell($qrWidth - 2, 5, strtoupper(substr($codigo['uuid_qr'], 0, 8)), 0, 0, 'C');
 
-                $pdf->SetFont('helvetica', 'I', 7.5);
+                // ── MENSJE FUNCIONARIO ─────────────────────────────────────
+                $pdf->SetFont('helvetica', 'I', 8.5); // Aumentado (antes 7.5)
                 $pdf->SetTextColor($azulDarkR, $azulDarkG, $azulDarkB);
                 $pdf->SetXY($x + 1, $sepY + 5.5);
-                $pdf->Cell($qrWidth - 2, 3, 'Funcionario/a municipal a su servicio.', 0, 0, 'C');
+                $pdf->Cell($qrWidth - 2, 4, 'Funcionario/a municipal a su servicio.', 0, 0, 'C');
 
                 // ── FOOTER DORADO ─────────────────────────────────────────
                 $footerY = $y + $qrHeight - 9;
                 $pdf->SetFillColor($doradoR, $doradoG, $doradoB);
+                // Footer ocupa hasta el final de altura
                 $pdf->Rect($x + 0.5, $footerY, $qrWidth - 1, 8.5, 'F');
 
                 $pdf->SetFont('helvetica', 'B', 5.5);
