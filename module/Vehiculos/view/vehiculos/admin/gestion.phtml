@@ -300,75 +300,121 @@ $qrAdminBaseUrl = substr($qrAdminBaseUrl, 0, strrpos($qrAdminBaseUrl, '/') + 1);
             // Cargar imagen del QR desde el endpoint local que genera la imagen
             const qrImg = new Image();
             qrImg.crossOrigin = 'anonymous';
-            // Ruta dinámica usando URL generada por PHP (soporta subdirectorio local y raíz en prod)
             qrImg.src = QR_ADMIN_BASE_URL + uuid;
 
-            await new Promise((resolve, reject) => {
-                qrImg.onload = resolve;
-                qrImg.onerror = reject;
-            });
+            // Cargar logo municipal
+            const logoImg = new Image();
+            logoImg.src = '<?= $this->basePath("assets/img/logo_muni.png") ?>';
 
-            // Dibujar el diseño en el canvas
-            // Borde
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 4;
+            await Promise.all([
+                new Promise((resolve, reject) => {
+                    qrImg.onload = resolve;
+                    qrImg.onerror = reject;
+                }),
+                new Promise((resolve) => {
+                    logoImg.onload = resolve;
+                    logoImg.onerror = resolve; // Si falla, lo ignoramos y usamos texto fallback
+                })
+            ]);
+
+            // Dibujar el diseño institucional en el canvas
+            
+            // ── FONDO BLANCO de la tarjeta ─────────────────────────────
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Borde grueso azul oscuro (#003370)
+            const b = 6; // Grosor de borde interior/exterior
+            ctx.strokeStyle = '#003370';
+            ctx.lineWidth = b * 2;
             ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-            // Encabezado azul
-            ctx.fillStyle = '#0d47a1';
-            ctx.fillRect(8, 8, canvas.width - 16, 80);
+            // ── HEADER: franja blanca con logo institucional ────────────
+            const headerPx = 165; 
+            if (logoImg.complete && logoImg.naturalHeight !== 0) {
+                const logoW = 472;
+                const logoH = 118;
+                const logoX = (canvas.width - logoW) / 2;
+                const logoY = 24;
+                ctx.drawImage(logoImg, logoX, logoY, logoW, logoH);
+            } else {
+                ctx.fillStyle = '#004693'; // Azul Pantone 293C
+                ctx.font = 'bold 36px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('MUNICIPALIDAD DE ARICA', canvas.width / 2, 90);
+            }
 
-            // Texto encabezado
+            // ── BANDA AZUL: título del sistema ─────────────────────────
+            const bandaY = headerPx + b;
+            const bandaPx = 83;
+            ctx.fillStyle = '#004693';
+            ctx.fillRect(b, bandaY, canvas.width - (b*2), bandaPx);
+
             ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 32px Arial';
+            ctx.font = 'bold 30px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('APROTEC', canvas.width / 2, 55);
+            ctx.fillText('IDENTIFICACIÓN VEHICULAR', canvas.width / 2, bandaY + 38);
+            
+            ctx.font = '26px Arial';
+            ctx.fillText('APROTEC', canvas.width / 2, bandaY + 70);
 
-            // Subtítulo
-            ctx.fillStyle = '#000000';
-            ctx.font = 'bold 24px Arial';
-            ctx.fillText('Identificación Vehicular', canvas.width / 2, 120);
-
-            // QR Code (centrado)
-            const qrSize = 500;
+            // ── CÓDIGO QR ─────────────────────────────────────────────
+            const qrSize = 437; 
             const qrX = (canvas.width - qrSize) / 2;
-            const qrY = 150;
-            ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
-
-            // Borde del QR
+            const qrY = bandaY + bandaPx + 36;
+            
+            // Dibujar borde QR opcional (suave)
             ctx.strokeStyle = '#dddddd';
             ctx.lineWidth = 2;
-            ctx.strokeRect(qrX, qrY, qrSize, qrSize);
+            ctx.strokeRect(qrX - 4, qrY - 4, qrSize + 8, qrSize + 8);
+            ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
 
-            // UUID
-            ctx.fillStyle = '#000000';
-            ctx.font = 'bold 28px Courier New';
-            ctx.fillText(uuid.substring(0, 8), canvas.width / 2, qrY + qrSize + 50);
+            // ── SEPARADOR DORADO ──────────────────────────────────────
+            const sepY = qrY + qrSize + 36;
+            ctx.strokeStyle = '#FF9E1B'; // Dorado Pantone 1375C
+            ctx.lineWidth = 10;
+            ctx.beginPath();
+            ctx.moveTo(35, sepY);
+            ctx.lineTo(canvas.width - 35, sepY);
+            ctx.stroke();
 
-            // Instrucciones
-            ctx.font = '20px Arial';
-            ctx.fillText('Escanee este código QR para', canvas.width / 2, qrY + qrSize + 100);
-            ctx.fillText('registrar o consultar información', canvas.width / 2, qrY + qrSize + 130);
-            ctx.fillText('del vehículo.', canvas.width / 2, qrY + qrSize + 160);
+            // ── ID CORTO del QR ────────────────────────────────────────
+            ctx.fillStyle = '#004693';
+            ctx.font = 'bold 44px Courier New';
+            ctx.fillText(uuid.substring(0, 8).toUpperCase(), canvas.width / 2, sepY + 65);
 
-            // URL
-            ctx.font = 'bold 20px Arial';
-            ctx.fillText('<?= str_replace(["https://", "http://"], "", $this->siteUrl ?? "www.aprotec.cl") ?>', canvas.width / 2, qrY + qrSize + 200);
+            // ── NUEVO TEXTO FUNCIONARIO ────────────────────────────────
+            ctx.fillStyle = '#003370';
+            ctx.font = 'italic 30px Arial';
+            ctx.fillText('Funcionario municipal a su servicio.', canvas.width / 2, sepY + 115);
+
+            // ── FOOTER DORADO ─────────────────────────────────────────
+            const footerPx = 106;
+            const footerY = canvas.height - footerPx - b;
+            ctx.fillStyle = '#FF9E1B';
+            ctx.fillRect(b, footerY, canvas.width - (b*2), footerPx);
+
+            ctx.fillStyle = '#003370';
+            ctx.font = 'bold 26px Arial';
+            ctx.fillText('Escanee para verificar el vehiculo', canvas.width / 2, footerY + 45);
+            
+            ctx.font = 'bold 32px Arial';
+            ctx.fillText('<?= str_replace(["https://", "http://"], "", $this->siteUrl ?? "www.aprotec.cl") ?>', canvas.width / 2, footerY + 85);
 
             // Convertir canvas a imagen
             const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
 
             // Mostrar vista previa en el modal (tamaño reducido para visualización)
             content.innerHTML = `
-            <div id="qrPreview">
+            <div id="qrPreview" class="py-2 text-center" style="background:#f1f3f5; border-radius: 6px;">
                 <img src="${dataUrl}" 
                      alt="Vista previa QR" 
-                     style="width: 230px; height: auto; border: 2px solid #dee2e6; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                     style="width: 280px; height: auto; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
             </div>
             <div class="mt-3">
                 <small class="text-muted">
                     <i class="bi bi-info-circle"></i> 
-                    Vista previa reducida | Descarga: 57mm x 93mm (673px x 1098px a 300 DPI)
+                    Vista previa | Diseño institucional Arica
                 </small>
             </div>
         `;
